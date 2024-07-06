@@ -1,0 +1,72 @@
+{% extends "include/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+
+<!-- ========================= SECTION MAIN ========================= -->
+<section class="section-intro padding-y-sm">
+<div class="container">
+
+<div class="intro-banner-wrap">
+	<img src="{% static "images/banners/1.jpg" %}" class="img-fluid rounded">
+</div>
+
+</div> <!-- container //  -->
+</section>
+<!-- ========================= SECTION MAIN END// ========================= -->
+
+<!-- ========================= SECTION  ========================= -->
+<section class="section-name padding-y-sm">
+<div class="container">
+
+<header class="section-heading">
+	<a href="{% url "all_tests" %}" class="btn btn-outline-primary float-right">See all</a>
+	<h3 class="section-title">Popular tests</h3>
+</header><!-- sect-heading -->
+
+	
+<div class="row">
+	{% for test in tests %}
+		{% include "components/test.html" %}
+	{% endfor %}
+	
+</div> <!-- row.// -->
+
+
+<header class="section-heading">
+	<a href="{% url "all_test_sets" %}" class="btn btn-outline-primary float-right">See all</a>
+	<h3 class="section-title">Popular test sets</h3>
+</header>
+<div class="row">
+	{% for test in test_sets %}
+	<div class="col-md-4">
+		{% comment %} <a href="#" style="color: black">  {% endcomment %}
+			<div class="card p-3 card-product-grid">
+				<figcaption class="info-wrap">
+					<h5 class="title"> {{ test.name }} </h5>
+					<div>
+						<i class="far fa-building"></i> {{ test.organization.name }}
+					</div>
+					<div class=" mt-2">
+						{{ test.description|truncatewords:10 }}
+					</div> 
+					<a href="{% url "test_sets" test.id %}">
+						<button class="btn btn-primary mt-3 w-100">View all tests</button>
+					</a>
+				</figcaption>
+			</div>
+		{% comment %} </a> {% endcomment %}
+	</div>
+	{% endfor %}
+	
+</div> <!-- row.// -->
+
+</div><!-- container // -->
+</section>
+<!-- ========================= SECTION  END// ========================= -->
+
+
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+<div class="col-md-4">
+    {% comment %} <a href="#" style="color: black">  {% endcomment %}
+        <div class="card p-3 card-product-grid">
+            <figcaption class="info-wrap">
+                <h5 class="title"> {{ test.name }} </h5>
+                <div>
+                    <i class="far fa-building"></i> {{ test.organization.name }}
+                </div>
+                <div class=" mt-2">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Billing code: {{ test.billing_code }}
+                </div> 
+                <div class=" mt-2">
+                    <i class="fas fa-calendar-check"></i>
+                    TAT: {{ test.tat }} {{ test.tat_unit }}
+                </div>
+                <div class=" mt-2">
+                    {% if test.available %}
+                        <i class="fas fa-check-circle"></i>
+                        Available
+                    {% else %}
+                        <i class="fas fa-times-circle"></i>
+                        Not available
+
+                    {% endif %}
+                </div> 
+                <a href="{% url "add_request" test.id %}">
+                    <button class="btn btn-outline-primary mt-3 w-100">Request</button>
+                </a>
+            </figcaption>
+        </div>
+    {% comment %} </a> {% endcomment %}
+</div>
