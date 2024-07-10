@@ -16,6 +16,7 @@ class TestInline(admin.StackedInline ):
 class TestSetInline(admin.StackedInline ):
     model = TestSet
     extra = 1
+    filter_horizontal = ('tests',)
 
 class OrganizationAdmin(admin.ModelAdmin):
     inlines = [ServiceInline, TestInline, TestSetInline]
@@ -24,7 +25,14 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 admin.site.register(Organization, OrganizationAdmin)
 
-admin.site.register(TestSet)
+
+class TestSetAdmin(admin.ModelAdmin):
+    list_display = ('name', 'organization', 'updated_at')
+    search_fields = ['name']
+    filter_horizontal = ('tests',)
+
+admin.site.register(TestSet, TestSetAdmin)
+
 admin.site.register(Service)
 admin.site.register(Test)
 

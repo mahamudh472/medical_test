@@ -94,8 +94,10 @@ def search_suggestions(request):
 
 
 def insert_test_data(request):
+    org = Organization.objects.get(id=2)
     for test in data:
         test_obj = Test.objects.create(
+            organization=org,
             name=test['TEST DESCRIPTION'],
             billing_code=test['BILLING CODE'],
             tz_std_tariff=test['TZ STD TARRIF'],
@@ -103,3 +105,4 @@ def insert_test_data(request):
             tat=test['TAT'],
             tat_unit=test['TAT UNIT']
         )
+        test_obj.save()

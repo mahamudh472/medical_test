@@ -24,6 +24,12 @@ class Service(models.Model):
     description = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=100)
     contact = models.CharField(max_length=100, blank=True, null=True)
+    iso_certificate_status = models.BooleanField(default=False)
+    iso_certificate_symbol = models.CharField(max_length=100, blank=True, null=True)
+    open_24_hours = models.BooleanField(default=False)
+    open_days = models.CharField(max_length=100, blank=True, null=True, default='Mondday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday')
+    opening_time = models.TimeField(blank=True, null=True)
+    closing_time = models.TimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
