@@ -30,6 +30,7 @@ class Service(models.Model):
     open_days = models.CharField(max_length=100, blank=True, null=True, default='Mondday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday')
     opening_time = models.TimeField(blank=True, null=True)
     closing_time = models.TimeField(blank=True, null=True)
+    other_time = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

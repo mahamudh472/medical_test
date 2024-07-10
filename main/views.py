@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from .models import Test, Organization, TestSet, Service
 from .utils import data
 from django.db.models import Q
+import datetime
 
 
 
@@ -84,25 +85,6 @@ def search_suggestions(request):
 
 
 
-
-
-
-
-
-
-
-
-
 def insert_test_data(request):
-    org = Organization.objects.get(id=2)
-    for test in data:
-        test_obj = Test.objects.create(
-            organization=org,
-            name=test['TEST DESCRIPTION'],
-            billing_code=test['BILLING CODE'],
-            tz_std_tariff=test['TZ STD TARRIF'],
-            sample_type=test['SMPLE TYPE'],
-            tat=test['TAT'],
-            tat_unit=test['TAT UNIT']
-        )
-        test_obj.save()
+
+    return HttpResponse("Data inserted successfully")
