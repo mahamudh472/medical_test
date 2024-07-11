@@ -40,25 +40,8 @@
 	<h3 class="section-title">Popular test sets</h3>
 </header>
 <div class="row">
-	{% for test in test_sets %}
-	<div class="col-md-4">
-		{% comment %} <a href="#" style="color: black">  {% endcomment %}
-			<div class="card p-3 card-product-grid">
-				<figcaption class="info-wrap">
-					<h5 class="title"> {{ test.name }} </h5>
-					<div>
-						<i class="far fa-building"></i> {{ test.organization.name }}
-					</div>
-					<div class=" mt-2">
-						{{ test.description|truncatewords:10 }}
-					</div> 
-					<a href="{% url "test_sets" test.id %}">
-						<button class="btn btn-primary mt-3 w-100">View all tests</button>
-					</a>
-				</figcaption>
-			</div>
-		{% comment %} </a> {% endcomment %}
-	</div>
+	{% for set in test_sets %}
+		{% include "components/test_set.html" %}
 	{% endfor %}
 	
 </div> <!-- row.// -->

@@ -1,0 +1,28 @@
+<div class="col-md-4">
+    {% comment %} <a href="#" style="color: black">  {% endcomment %}
+        <div class="card p-3 card-product-grid">
+            <figcaption class="info-wrap">
+                <h5 class="title"> {{ set.name }} </h5>
+                <div>
+                    <i class="far fa-building"></i> {{ set.organization.name }}
+                </div>
+                <div class=" mt-2">
+                    {{ set.description|truncatewords:10 }}
+                </div> 
+                
+                <div class="row align-items-center mt-3">
+                    <a href="{% url "test_sets" set.id %}">
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-eye"></i>
+                            View all tests</button>
+                    </a>
+                    <a class="col-6 " href="{% url "set_add_to_cart" set.id %}">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus"></i>
+                            Request</button>
+                    </a>
+                </div>
+            </figcaption>
+        </div>
+    {% comment %} </a> {% endcomment %}
+</div>

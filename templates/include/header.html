@@ -53,6 +53,10 @@
                     <datalist id="suggestions">
                         
                     </datalist>
+                    <select id="query-category" name="category" class="form-control" style="width:10%;">
+                        <option selected value="test">Test</option>
+                        <option value="service">Service</option>
+                    </select>
                     <div class="input-group-append">
                       <button class="btn btn-primary" type="submit">
                         <i class="fa fa-search"></i>
@@ -62,8 +66,9 @@
             </form> <!-- search-wrap .end// -->
             <script>
                 const query_input = document.getElementById("query-input");
+                const query_category = document.getElementById("query-category");
                 query_input.addEventListener("input", function(event){
-                    fetch(`/suggestions?query=${query_input.value}`)
+                    fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
                     .then(response => response.json())
                     .then(data => {
                         const suggestions = document.getElementById("suggestions");
@@ -90,6 +95,12 @@
                             <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
                             <span class="badge badge-pill badge-danger notify">
                                 {{request_count}}
+                            </span>
+                        </a>
+                        <a href="{% url "favorite_list" %}" class="widget-header pl-3 ml-3">
+                            <div class="icon icon-sm rounded-circle border"><i class="fa fa-heart"></i></div>
+                            <span class="badge badge-pill badge-danger notify">
+                                {{favorite_count}}
                             </span>
                         </a>
                     </div> <!-- widgets-wrap.// -->

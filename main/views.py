@@ -53,10 +53,14 @@ def test_sets(request, id):
 
 def search(request):
     query = request.GET.get('query')
+    category = request.GET.get('category')
+    if category == 'service':
+        return search_service(request)
     tests = Test.objects.filter(
         Q(name__icontains=query) |
         Q(billing_code__icontains=query) |
-        Q(sample_type__icontains=query)
+        Q(sample_type__icontains=query) |
+        Q(organization__name__icontains=query)
     )
     tests = tests.distinct()
     context = {
@@ -65,17 +69,50 @@ def search(request):
     return render(request, "main/search.html", context)
 
 
+def search_service(request):
+    query = request.GET.get('query')
+    services = Service.objects.filter(
+        Q(name__icontains=query) |
+        Q(location__icontains=query) |
+        Q(organization__name__icontains=query)
+    )
+    services = services.distinct()
+    context = {
+        'services': services,
+    }
+    return render(request, "main/search_service.html", context)
+
+
 def search_suggestions(request):
     query = request.GET.get('query')
+    category = request.GET.get('category')
+    if category == 'service':
+        return search_service_suggestions(request)
     tests = Test.objects.filter(
         Q(name__icontains=query) |
         Q(billing_code__icontains=query) |
-        Q(sample_type__icontains=query)
+        Q(sample_type__icontains=query) |
+        Q(organization__name__icontains=query) 
     )
     tests = tests.distinct()[:5]
     # only list of names
     tests = [test.name for test in tests]
     return JsonResponse(tests, safe=False)
+
+
+def search_service_suggestions(request):
+    query = request.GET.get('query')
+    # print(Service.objects.filter(organization__name__icontains=query))
+    services = Service.objects.filter(
+        Q(name__icontains=query) |
+        Q(location__icontains=query) |
+        Q(organization__name__icontains=query)
+    )
+    services = services.distinct()[:5]
+    print(services)
+    # only list of names
+    services = [service.name for service in services]
+    return JsonResponse(services, safe=False)
     
 
 
