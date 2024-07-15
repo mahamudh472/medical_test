@@ -1,7 +1,10 @@
-from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from main.models import Test, TestSet
 from .models import Request, Favorite
 from django.contrib import messages
+from django.views.decorators.http import require_POST
+
 
 # Create your views here.
 
@@ -17,9 +20,10 @@ def add_request(request, test_id):
             key = request.session.session_key
         req, created = Request.objects.get_or_create(anynomous_user=key)
         req.tests.add(test)
-        
+
     messages.success(request, "Test added to request")
     return redirect(request.META.get('HTTP_REFERER'))
+
 
 def remove_request(request, test_id):
     test = Test.objects.get(id=test_id)
@@ -33,9 +37,10 @@ def remove_request(request, test_id):
             key = request.session.session_key
         req = Request.objects.get(anynomous_user=key)
         req.tests.remove(test)
-        
+
     messages.success(request, "Test removed from request")
     return redirect(request.META.get('HTTP_REFERER'))
+
 
 def request_list(request):
     if request.user.is_authenticated:
@@ -68,6 +73,7 @@ def favorite_add(request, test_id):
     messages.success(request, "Test added to favorite")
     return redirect(request.META.get('HTTP_REFERER'))
 
+
 def favorite_remove(request, test_id):
     test = Test.objects.get(id=test_id)
     if request.user.is_authenticated:
@@ -83,6 +89,7 @@ def favorite_remove(request, test_id):
 
     messages.success(request, "Test removed from favorite")
     return redirect(request.META.get('HTTP_REFERER'))
+
 
 def favorite_list(request):
     if request.user.is_authenticated:
@@ -117,14 +124,20 @@ def set_add_to_cart(request, set_id):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+@require_POST
+def update_unit(request):
+    test_id = request.POST.get('test_id')
+    unit = int(request.POST.get('unit'))
 
+    # Find the test object and update the unit
+    test = get_object_or_404(Test, id=test_id)
+    test.unit = unit
+    test.save()
+    if test.unit == 0:
+        test.delete()
+        return JsonResponse({'success': True})
 
+    # Calculate the new amount
+    new_amount = test.unit * test.tz_std_tariff
 
-
-
-
-
-
-
-
-
+    return JsonResponse({'success': True, 'new_unit': test.unit, 'new_amount': new_amount})

@@ -1,76 +1,174 @@
 {% extends "include/base.html" %}
 
 {% block content %}
-<section class="section-content padding-y bg">
-    <div class="container">
-        <!-- ============================ COMPONENT 1 ================================= -->
+    <style>
+        .counter-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.37rem;
+        }
 
-        <div class="row">
-            <aside class="col-12">
-                <div class="card">
-                    {% if request.tests.all %}
-                    <table class="table table-borderless table-shopping-cart">
-                        <thead class="text-muted">
-                            <tr class="small text-uppercase">
-                                <th scope="col">Test</th>
-                                <th style="white-space:nowrap" scope="col" width="120">BILLING CODE</th>
-                                <th style="white-space:nowrap" scope="col" width="120">TZ STD TARRIF</th>
-                                <th style="white-space:nowrap" scope="col">SMPLE TYPE</th>
-                                <th scope="col">TAT</th>
-                                <th scope="col" class="text-right" width="200"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for test in request.tests.all %}
-                            <tr>
-                                <td>
-                                    <figure class="itemside align-items-center">
-                                        <figcaption class="info">
-                                            <a href="#" class="title text-dark">
-                                                {{ test.name }}
-                                            </a>
-                                            <p class="text-muted small">
-                                                <i class="far fa-building"></i> {{ test.organization.name }}
-                                            </p>
-                                        </figcaption>
-                                    </figure>
-                                </td>
-                                <td>
-                                    {{ test.billing_code }}
-                                </td>
-                                <td>
-                                    {{ test.tz_std_tariff }}
-                                </td>
-                                <td>
-                                    {{ test.sample_type }}
-                                </td>
-                                <td>
-                                    {{ test.tat }} {{test.tat_unit}}
-                                </td>
-                                <td class="text-right">
-                                    <a href="{% url "remove_request" test.id %}" class="btn btn-danger"> Remove</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <hr>
-                    <div class="p-3 pt-0">
-                        Total: {{ request.tests.all|length }} tests
+        .counter-btn {
+            width: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            border: none !important;
+        }
+
+        .counter-input {
+            width: 50px;
+            text-align: center;
+            border-radius: 0 !important;
+            border: none !important;
+        }
+    </style>
+    <section class="section-content padding-y bg">
+        <div class="container">
+            <!-- ============================ COMPONENT 1 ================================= -->
+
+            <div class="row">
+                <aside class="col-12">
+                    <div class="card">
+                        {% if request.tests.all %}
+                            <table class="table table-borderless table-shopping-cart">
+                                <thead class="text-muted">
+                                <tr class="small text-uppercase">
+                                    <th scope="col">Test</th>
+                                    <th style="white-space:nowrap" scope="col" width="120">Unit</th>
+                                    <th style="white-space:nowrap" scope="col">TZ STD TARRIF</th>
+                                    <th scope="col" class="text-right" width="200"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for test in request.tests.all %}
+                                    <tr data-test-id="{{ test.id }}">
+                                        <td>
+                                            <figure class="itemside align-items-center">
+                                                <figcaption class="info">
+                                                    <a href="#" class="title text-dark">
+                                                        {{ test.name }}
+                                                    </a>
+                                                    <p class="text-muted small">
+                                                        <i class="far fa-building"></i> {{ test.organization.name }}
+                                                    </p>
+                                                </figcaption>
+                                            </figure>
+                                        </td>
+                                        <td>
+                                            <div class="counter-container">
+                                                <button class="btn btn-light counter-btn decrement">-</button>
+                                                <input type="text" class="form-control counter-input"
+                                                       value="{{ test.unit }}">
+                                                <button class="btn btn-light counter-btn increment">+</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            TZS <span id="amount{{ test.id }}">{{ test.get_price }}</span>
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="{% url "remove_request" test.id %}"
+                                               class="btn btn-danger">Remove</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <hr>
+                            <div class="p-3 pt-0">
+                                Total: {{ request.tests.all|length }} tests
+                            </div>
+                        {% else %}
+                            <div class="p-3" role="alert">
+                                No tests in the request
+                            </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div class="p-3" role="alert">
-                        No tests in the request
+                    <!-- card.// -->
+                </aside>
+                <!-- col.// -->
+            </div>
+            <!-- row.// -->
+            <!-- ============================ COMPONENT 1 END .// ================================= -->
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card my-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-8">
+                                    <input type="text" class="form-control" placeholder="Discount Voucher/Coupon">
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-primary">APPLY</button>
+                                </div>
+
+                            </div>
+                            <table class="table table-borderless my-3 col-6">
+                                <tr>
+                                    <th>Sub Total</th>
+                                    <td id="sub_total">{{ request.get_sub_total }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Discount</th>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <th>Tax</th>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <th>Total</th>
+                                    <td id="total">{{ request.get_sub_total }}</td>
+                                </tr>
+
+
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between p-4">
+                            <a href="{% url 'all_tests' %}"><button class="btn btn-outline-primary">Add more Task</button></a>
+                            <button class="btn btn-outline-success">Proceed to checkout</button>
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
-                <!-- card.// -->
-            </aside>
-            <!-- col.// -->
+            </div>
+
         </div>
-        <!-- row.// -->
-        <!-- ============================ COMPONENT 1 END .// ================================= -->
-    </div>
-    <!-- container .//  -->
-</section>
+        <!-- container .//  -->
+    </section>
+    <script>
+        $(document).ready(function () {
+            $('.increment, .decrement').click(function () {
+                const isIncrement = $(this).hasClass('increment');
+                const input = $(this).siblings('.counter-input');
+                let currentValue = parseInt(input.val());
+                const newValue = isIncrement ? currentValue + 1 : (currentValue > 0 ? currentValue - 1 : 0);
+                input.val(newValue);
+
+                const testId = $(this).closest('tr').data('test-id');
+
+                $.ajax({
+                    url: '{% url "update_unit" %}',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        test_id: testId,
+                        unit: newValue
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $('#amount' + testId).text(data.new_amount);
+                            location.reload()
+                        }
+                    },
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

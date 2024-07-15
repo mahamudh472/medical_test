@@ -13,6 +13,13 @@ class Request(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def get_sub_total(self):
+        sub_total = 0
+        for obj in self.tests.all():
+            sub_total += obj.get_price()
+        return sub_total
+
     
 
 class Favorite(models.Model):
