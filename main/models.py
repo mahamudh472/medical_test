@@ -42,16 +42,20 @@ class Test(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     billing_code = models.CharField(max_length=100)
-    tz_std_tariff = models.CharField(max_length=100)
+    tz_std_tariff = models.IntegerField()
     sample_type = models.CharField(max_length=100)
     tat = models.CharField(max_length=100)
     tat_unit = models.CharField(max_length=100)
     available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    unit = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
+
+    def get_price(self):
+        return self.unit * self.tz_std_tariff
     
 
 class TestSet(models.Model):

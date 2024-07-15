@@ -3,101 +3,106 @@
 
 <header class="section-header">
     <nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">
-    <div class="container">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarTop4">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown">
-                 <a href="#" class="nav-link">   English </a>
-                
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link"> USD </a>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
-            <li><a href="#" class="nav-link"> <i class="fa fa-envelope"></i> Email </a></li>
-            <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
-        </ul> <!-- list-inline //  -->
-      </div> <!-- navbar-collapse .// -->
-    </div> <!-- container //  -->
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTop4">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link"> English </a>
+
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link"> USD </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li><a href="#" class="nav-link"> <i class="fa fa-envelope"></i> Email </a></li>
+                    <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
+                </ul> <!-- list-inline //  -->
+            </div> <!-- navbar-collapse .// -->
+        </div> <!-- container //  -->
     </nav>
-    
+
     <section class="header-main border-bottom">
         <div class="container">
-    <div class="row align-items-center">
-        <div class="col-lg-2 col-md-3 col-6">
-            <a href="/" class="brand-wrap">
-                <img class="logo" src="{% static "images/300x67.png" %}">
-            </a> <!-- brand-wrap.// -->
-        </div>
-        <div class="col-lg col-sm col-md col-6 flex-grow-0">
-            <div class="category-wrap dropdown d-inline-block float-right">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
-                    <i class="fa fa-bars"></i> All Organizations 
-                </button>
-                <div class="dropdown-menu">
-                    {% for org in orgs %}
-                        <a class="dropdown-item" href="{% url "organisation" org.id %}">{{ org.name }}</a>
-                    {% endfor %}
+            <div class="row align-items-center">
+                <div class="col-lg-2 col-md-3 col-6">
+                    <a href="/" class="brand-wrap">
+                        <img class="logo" src="{% static 'images/300x67.png' %}">
+                    </a> <!-- brand-wrap.// -->
                 </div>
-            </div>  <!-- category-wrap.// -->
-        </div> <!-- col.// -->
-        <a href="{% url "all_tests" %}" class="btn btn-outline-primary">Tests</a>
-        <div class="col-lg  col-md-6 col-sm-12 col">
-            <form action="{% url "search" %}" class="search">
-                <div class="input-group w-100">
-                    <input list="suggestions" id="query-input" name="query" type="text" class="form-control" style="width:60%;" placeholder="Search">
-                    <datalist id="suggestions">
-                        
-                    </datalist>
-                    <select id="query-category" name="category" class="form-control" style="width:10%;">
-                        <option selected value="test">Test</option>
-                        <option value="service">Service</option>
-                    </select>
-                    <div class="input-group-append">
-                      <button class="btn btn-primary" type="submit">
-                        <i class="fa fa-search"></i>
-                      </button>
-                    </div>
-                </div>
-            </form> <!-- search-wrap .end// -->
-            <script>
-                const query_input = document.getElementById("query-input");
-                const query_category = document.getElementById("query-category");
-                query_input.addEventListener("input", function(event){
-                    fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const suggestions = document.getElementById("suggestions");
-                        suggestions.innerHTML = "";
-                        data.forEach(suggestion => {
-                            const option = document.createElement("option");
-                            option.value = suggestion;
-                            suggestions.appendChild(option);
-                        });
-                    });
-                });
-            </script>
-        </div> <!-- col.// -->
-        <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
+                <div class="col-lg-7"></div>
+                <!-- <div class="col-lg col-sm col-md col-6 flex-grow-0">
+                    <div class="category-wrap dropdown d-inline-block float-right">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i> All Organizations
+                        </button>
+                        <div class="dropdown-menu">
+                            {% for org in orgs %}
+                            <a class="dropdown-item" href="{% url 'organisation' org.id %}">{{ org.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div> 
+                </div> -->
+                <!-- col.// -->
+                <!-- <a href="{% url 'all_tests' %}" class="btn btn-outline-primary">Tests</a> -->
+{#                 <div class="col-lg  col-md-6 col-sm-12 col">#}
+{#                    <form action="{% url 'search' %}" class="search">#}
+{#                        <div class="input-group w-100">#}
+{#                            <input list="suggestions" id="query-input" name="query" type="text" class="form-control"#}
+{#                                style="width:60%;" placeholder="Search">#}
+{#                            <datalist id="suggestions">#}
+{##}
+{#                            </datalist>#}
+{#                            <select id="query-category" name="category" class="form-control" style="width:10%;">#}
+{#                                <option selected value="test">Test</option>#}
+{#                                <option value="service">Service</option>#}
+{#                            </select>#}
+{#                            <div class="input-group-append">#}
+{#                                <button class="btn btn-primary" type="submit">#}
+{#                                    <i class="fa fa-search"></i>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </form> #}
+{#                    <script>#}
+{#                        const query_input = document.getElementById("query-input");#}
+{#                        const query_category = document.getElementById("query-category");#}
+{#                        query_input.addEventListener("input", function (event) {#}
+{#                            fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)#}
+{#                                .then(response => response.json())#}
+{#                                .then(data => {#}
+{#                                    const suggestions = document.getElementById("suggestions");#}
+{#                                    suggestions.innerHTML = "";#}
+{#                                    data.forEach(suggestion => {#}
+{#                                        const option = document.createElement("option");#}
+{#                                        option.value = suggestion;#}
+{#                                        suggestions.appendChild(option);#}
+{#                                    });#}
+{#                                });#}
+{#                        });#}
+{#                    </script>#}
+{#                </div> #}
+                 <!-- col.// -->
+                <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
                     <div class="d-flex justify-content-end mb-3 mb-lg-0">
                         <div class="widget-header">
                             <small class="title text-muted">Welcome guest!</small>
-                            <div> 
+                            <div>
                                 <a href="./signin.html">Sign in</a> <span class="dark-transp"> | </span>
                                 <a href="./register.html"> Register</a>
                             </div>
                         </div>
-                        <a href="{% url "request_list" %}" class="widget-header pl-3 ml-3">
+                        <a href="{% url 'request_list' %}" class="widget-header pl-3 ml-3">
                             <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
                             <span class="badge badge-pill badge-danger notify">
                                 {{request_count}}
                             </span>
                         </a>
-                        <a href="{% url "favorite_list" %}" class="widget-header pl-3 ml-3">
+                        <a href="{% url 'favorite_list' %}" class="widget-header pl-3 ml-3">
                             <div class="icon icon-sm rounded-circle border"><i class="fa fa-heart"></i></div>
                             <span class="badge badge-pill badge-danger notify">
                                 {{favorite_count}}
@@ -105,26 +110,25 @@
                         </a>
                     </div> <!-- widgets-wrap.// -->
                 </div> <!-- col.// -->
-    </div> <!-- row.// -->
+            </div> <!-- row.// -->
         </div> <!-- container.// -->
     </section> <!-- header-main .// -->
-    
-    
-    
-    
+
+
+
+
 </header> <!-- section-header.// -->
 
 {% if messages %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 mt-2">
-                {% for message in messages %}
-                    <div class="alert alert-primary">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 mt-2">
+            {% for message in messages %}
+            <div class="alert alert-primary">
+                {{ message }}
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 {% endif %}
-    

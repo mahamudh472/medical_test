@@ -6,7 +6,6 @@ from django.db.models import Q
 import datetime
 
 
-
 # Create your views here.
 
 def home(request):
@@ -53,9 +52,15 @@ def test_sets(request, id):
 
 def search(request):
     query = request.GET.get('query')
-    category = request.GET.get('category')
-    if category == 'service':
-        return search_service(request)
+    location = request.GET.get('location')
+
+    services = Service.objects.filter(
+        Q(name__icontains=query) |
+        Q(organization__name__icontains=query) &
+        Q(location__icontains=query)
+    )
+    services = services.distinct()
+
     tests = Test.objects.filter(
         Q(name__icontains=query) |
         Q(billing_code__icontains=query) |
@@ -65,6 +70,7 @@ def search(request):
     tests = tests.distinct()
     context = {
         'tests': tests,
+        'services': services,
     }
     return render(request, "main/search.html", context)
 
@@ -86,13 +92,13 @@ def search_service(request):
 def search_suggestions(request):
     query = request.GET.get('query')
     category = request.GET.get('category')
-    if category == 'service':
-        return search_service_suggestions(request)
+    # if category == 'service':
+    #     return search_service_suggestions(request)
     tests = Test.objects.filter(
         Q(name__icontains=query) |
         Q(billing_code__icontains=query) |
         Q(sample_type__icontains=query) |
-        Q(organization__name__icontains=query) 
+        Q(organization__name__icontains=query)
     )
     tests = tests.distinct()[:5]
     # only list of names
@@ -100,28 +106,20 @@ def search_suggestions(request):
     return JsonResponse(tests, safe=False)
 
 
-def search_service_suggestions(request):
-    query = request.GET.get('query')
-    # print(Service.objects.filter(organization__name__icontains=query))
-    services = Service.objects.filter(
-        Q(name__icontains=query) |
-        Q(location__icontains=query) |
-        Q(organization__name__icontains=query)
-    )
-    services = services.distinct()[:5]
-    print(services)
-    # only list of names
-    services = [service.name for service in services]
-    return JsonResponse(services, safe=False)
-    
-
-
-
-
-
-
+# def search_service_suggestions(request):
+#     query = request.GET.get('query')
+#     # print(Service.objects.filter(organization__name__icontains=query))
+#     services = Service.objects.filter(
+#         Q(name__icontains=query) |
+#         Q(location__icontains=query) |
+#         Q(organization__name__icontains=query)
+#     )
+#     services = services.distinct()[:5]
+#     print(services)
+#     # only list of names
+#     services = [service.name for service in services]
+#     return JsonResponse(services, safe=False)
 
 
 def insert_test_data(request):
-
     return HttpResponse("Data inserted successfully")

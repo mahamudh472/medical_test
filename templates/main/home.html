@@ -5,50 +5,109 @@
 {% block content %}
 
 
-<!-- ========================= SECTION MAIN ========================= -->
-<section class="section-intro padding-y-sm">
-<div class="container">
+    <!-- ========================= SECTION MAIN ========================= -->
+    <section class="section-intro padding-y-sm">
+        <div class="container">
 
-<div class="intro-banner-wrap">
-	<img src="{% static "images/banners/1.jpg" %}" class="img-fluid rounded">
-</div>
+            <div class="intro-banner-wrap">
+                <img src="{% static 'images/banners/image-1.jpeg' %}" class="rounded"
+                     style="height: 300px; width: 100%; object-fit: cover">
+            </div>
+            <div class="col-lg  col-md-6 col-sm-12 col my-5">
+                    <form action="{% url 'search' %}" class="search">
+{#                        <div class="input-group w-100">#}
+{#                            <input list="suggestions" id="query-input" name="query" type="text" class="form-control"#}
+{#                                style="width:60%;" placeholder="Search">#}
+{#                            <datalist id="suggestions">#}
+{##}
+{#                            </datalist>#}
+{#                            <select id="query-category" name="category" class="form-control" style="width:10%;">#}
+{#                                <option selected value="test">Test</option>#}
+{#                                <option value="service">Service</option>#}
+{#                            </select>#}
+{#                            <div class="input-group-append">#}
+{#                                <button class="btn btn-primary" type="submit">#}
+{#                                    <i class="fa fa-search"></i>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        </div>#}
+                        <div class="row w-75 border rounded p-2 center-x relative">
+                            <div class="d-flex flex-column col-5 border-right">
+                                <label for="query-input" class="text-muted">Search</label>
+                                <div class="relative">
+                                    <i class="fa fa-search absolute center-y"></i>
+                                    <input class="form-control px-4" style="border: none !important;" type="text" list="suggestions" id="query-input" name="query" placeholder="Provider name, Hospital or clinic name">
+                                    <datalist id="suggestions"></datalist>
+                                </div>
 
-</div> <!-- container //  -->
-</section>
-<!-- ========================= SECTION MAIN END// ========================= -->
+                            </div>
+                            <div class="d-flex flex-column col-5">
+                                <label for="location" class="text-muted">Location</label>
+                                <div class="relative">
+                                    <i class="fa fa-search absolute center-y"></i>
+                                    <input class="form-control px-4" style="border: none !important;" type="text" id="location" placeholder="Location, Postcode or Address">
+                                </div>
 
-<!-- ========================= SECTION  ========================= -->
-<section class="section-name padding-y-sm">
-<div class="container">
+                            </div>
+                            <button class="col-2 btn btn-primary-light" type="submit"><i class="fa fa-search"></i> </button>
 
-<header class="section-heading">
-	<a href="{% url "all_tests" %}" class="btn btn-outline-primary float-right">See all</a>
-	<h3 class="section-title">Popular tests</h3>
-</header><!-- sect-heading -->
+                        </div>
+                    </form>
+                    <script>
+                        const query_input = document.getElementById("query-input");
+                        const query_category = document.getElementById("location");
+                        query_input.addEventListener("input", function (event) {
+                            fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const suggestions = document.getElementById("suggestions");
+                                    suggestions.innerHTML = "";
+                                    data.forEach(suggestion => {
+                                        const option = document.createElement("option");
+                                        option.value = suggestion;
+                                        suggestions.appendChild(option);
+                                    });
+                                });
+                        });
+                    </script>
+                </div>
 
-	
-<div class="row">
-	{% for test in tests %}
-		{% include "components/test.html" %}
-	{% endfor %}
-	
-</div> <!-- row.// -->
+        </div> <!-- container //  -->
+    </section>
+    <!-- ========================= SECTION MAIN END// ========================= -->
+
+    <!-- ========================= SECTION  ========================= -->
+    <section class="section-name padding-y-sm">
+        <div class="container">
+
+            <header class="section-heading">
+                <a href="{% url "all_tests" %}" class="btn btn-outline-primary float-right">See all</a>
+                <h3 class="section-title">Popular tests</h3>
+            </header><!-- sect-heading -->
 
 
-<header class="section-heading">
-	<a href="{% url "all_test_sets" %}" class="btn btn-outline-primary float-right">See all</a>
-	<h3 class="section-title">Popular test sets</h3>
-</header>
-<div class="row">
-	{% for set in test_sets %}
-		{% include "components/test_set.html" %}
-	{% endfor %}
-	
-</div> <!-- row.// -->
+            <div class="row">
+                {% for test in tests %}
+                    {% include "components/test.html" %}
+                {% endfor %}
 
-</div><!-- container // -->
-</section>
-<!-- ========================= SECTION  END// ========================= -->
+            </div> <!-- row.// -->
+
+
+            <header class="section-heading">
+                <a href="{% url "all_test_sets" %}" class="btn btn-outline-primary float-right">See all</a>
+                <h3 class="section-title">Popular test sets</h3>
+            </header>
+            <div class="row">
+                {% for set in test_sets %}
+                    {% include "components/test_set.html" %}
+                {% endfor %}
+
+            </div> <!-- row.// -->
+
+        </div><!-- container // -->
+    </section>
+    <!-- ========================= SECTION  END// ========================= -->
 
 
 
