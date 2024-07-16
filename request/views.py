@@ -11,32 +11,25 @@ from django.views.decorators.http import require_POST
 def add_request(request, test_id):
     test = Test.objects.get(id=test_id)
     if request.user.is_authenticated:
-        req, created = Request.objects.get_or_create(user=request.user)
-        req.tests.add(test)
+        req = Request.objects.get_or_create(user=request.user, test=test)
+        req[0].save()
+
     else:
         key = request.session.session_key
         if not key:
             request.session.create()
             key = request.session.session_key
-        req, created = Request.objects.get_or_create(anynomous_user=key)
-        req.tests.add(test)
+        req = Request.objects.get_or_create(anynomous_user=key, test=test)
+        req[0].save()
 
     messages.success(request, "Test added to request")
     return redirect(request.META.get('HTTP_REFERER'))
 
 
 def remove_request(request, test_id):
-    test = Test.objects.get(id=test_id)
-    if request.user.is_authenticated:
-        req = Request.objects.get(user=request.user)
-        req.tests.remove(test)
-    else:
-        key = request.session.session_key
-        if not key:
-            request.session.create()
-            key = request.session.session_key
-        req = Request.objects.get(anynomous_user=key)
-        req.tests.remove(test)
+    req = Request.objects.filter(id=test_id)
+    if req.exists():
+        req[0].delete()
 
     messages.success(request, "Test removed from request")
     return redirect(request.META.get('HTTP_REFERER'))
@@ -44,13 +37,13 @@ def remove_request(request, test_id):
 
 def request_list(request):
     if request.user.is_authenticated:
-        requests = Request.objects.filter(user=request.user).first()
+        requests = Request.objects.filter(user=request.user)
     else:
         key = request.session.session_key
         if not key:
             request.session.create()
             key = request.session.session_key
-        requests = Request.objects.filter(anynomous_user=key).first()
+        requests = Request.objects.filter(anynomous_user=key)
     context = {
         'request': requests
     }
@@ -64,11 +57,13 @@ def favorite_add(request, test_id):
         fav.tests.add(test)
     else:
         key = request.session.session_key
+        print(key)
         if not key:
             request.session.create()
             key = request.session.session_key
         fav, created = Favorite.objects.get_or_create(anynomous_user=key)
         fav.tests.add(test)
+        print("working")
 
     messages.success(request, "Test added to favorite")
     return redirect(request.META.get('HTTP_REFERER'))
@@ -126,18 +121,33 @@ def set_add_to_cart(request, set_id):
 
 @require_POST
 def update_unit(request):
-    test_id = request.POST.get('test_id')
+    req_id = request.POST.get('test_id')
     unit = int(request.POST.get('unit'))
 
     # Find the test object and update the unit
-    test = get_object_or_404(Test, id=test_id)
-    test.unit = unit
-    test.save()
-    if test.unit == 0:
-        test.delete()
+    req = get_object_or_404(Request, id=req_id)
+    req.unit = unit
+    req.save()
+    if req.unit == 0:
+        req.delete()
         return JsonResponse({'success': True})
 
     # Calculate the new amount
-    new_amount = test.unit * test.tz_std_tariff
+    new_amount = req.unit * req.test.tz_std_tariff
 
-    return JsonResponse({'success': True, 'new_unit': test.unit, 'new_amount': new_amount})
+    return JsonResponse({'success': True, 'new_unit': req.unit, 'new_amount': new_amount})
+
+
+def checkout(request):
+    if request.user.is_authenticated:
+        requests = Request.objects.filter(user=request.user)
+    else:
+        key = request.session.session_key
+        if not key:
+            request.session.create()
+            key = request.session.session_key
+        requests = Request.objects.filter(anynomous_user=key)
+    context = {
+        'request': requests
+    }
+    return render(request, "request/place-order.html", context)

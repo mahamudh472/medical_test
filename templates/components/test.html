@@ -2,18 +2,18 @@
     {% comment %} <a href="#" style="color: black">  {% endcomment %}
         <div class="card p-3 card-product-grid">
             <figcaption class="info-wrap h-100">
-                <div style="min-height: 180px">
+                <div style="min-height: 150px">
                     <h5 class="title"> {{ test.name }} </h5>
-                    <div>
-                        <i class="far fa-building"></i> {{ test.organization.name }}
-                    </div>
-                    <div class=" mt-2">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                        Billing code: {{ test.billing_code }}
-                    </div> 
+{#                    <div>#}
+{#                        <i class="far fa-building"></i> {{ test.organization.name }}#}
+{#                    </div>#}
+{#                    <div class=" mt-2">#}
+{#                        <i class="fas fa-file-invoice-dollar"></i>#}
+{#                        Billing code: {{ test.billing_code }}#}
+{#                    </div> #}
                     <div class=" mt-2">
                         <i class="fas fa-calendar-check"></i>
-                        TAT: {{ test.tat }} {{ test.tat_unit }}
+                        Price: {{ test.tz_std_tariff }}
                     </div>
                     <div class=" mt-2">
                         {% if test.available %}
