@@ -29,8 +29,13 @@ def organisation(request, id):
 
 def all_tests(request):
     tests = Test.objects.all()
+    paginator = Paginator(tests, 8)
+    page_num = request.GET.get('page')
+    page_obj = paginator.get_page(page_num)
+    total_items = tests.count()
     context = {
-        'tests': tests
+        'tests': page_obj,
+        'total_items': total_items
     }
     return render(request, "main/all_tests.html", context)
 
