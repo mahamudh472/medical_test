@@ -7,7 +7,7 @@ from main.models import Test, TestSet
 class Request(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     anynomous_user = models.CharField(max_length=200, null=True, blank=True)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, blank=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
     unit = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

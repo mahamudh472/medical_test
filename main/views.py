@@ -10,8 +10,8 @@ from django.core.paginator import Paginator
 # Create your views here.
 
 def home(request):
-    tests = Test.objects.all().order_by('?')[:12]
-    test_sets = TestSet.objects.all().order_by('?')[:12]
+    tests = Test.objects.all().order_by('?')[:8]
+    test_sets = TestSet.objects.all().order_by('?')[:8]
     context = {
         'tests': tests,
         'test_sets': test_sets
@@ -52,8 +52,10 @@ def test_sets(request, id):
 
 
 def search(request):
-    query = request.GET.get('query')
     location = request.GET.get('location')
+    if location:
+        return search_service(request)
+    query = request.GET.get('query')
 
     services = Service.objects.filter(
         Q(name__icontains=query) |
@@ -85,10 +87,11 @@ def search(request):
 
 def search_service(request):
     query = request.GET.get('query')
+    location = request.GET.get('location')
     services = Service.objects.filter(
         Q(name__icontains=query) |
-        Q(location__icontains=query) |
-        Q(organization__name__icontains=query)
+        Q(organization__name__icontains=query) &
+        Q(location__icontains=location)
     )
     services = services.distinct()
     context = {

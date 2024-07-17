@@ -13,64 +13,64 @@
                 <img src="{% static 'images/banners/image-1.jpeg' %}" class="rounded"
                      style="height: 300px; width: 100%; object-fit: cover">
             </div>
-            <div class="col-lg  col-md-6 col-sm-12 col my-5">
-                    <form action="{% url 'search' %}" class="search" method="get">
-{#                        <div class="input-group w-100">#}
-{#                            <input list="suggestions" id="query-input" name="query" type="text" class="form-control"#}
-{#                                style="width:60%;" placeholder="Search">#}
-{#                            <datalist id="suggestions">#}
-{##}
-{#                            </datalist>#}
-{#                            <select id="query-category" name="category" class="form-control" style="width:10%;">#}
-{#                                <option selected value="test">Test</option>#}
-{#                                <option value="service">Service</option>#}
-{#                            </select>#}
-{#                            <div class="input-group-append">#}
-{#                                <button class="btn btn-primary" type="submit">#}
-{#                                    <i class="fa fa-search"></i>#}
-{#                                </button>#}
-{#                            </div>#}
-{#                        </div>#}
-                        <div class="row w-75 border rounded p-2 center-x relative">
-                            <div class="d-flex flex-column col-5 border-right">
-                                <label for="query-input" class="text-muted">Search</label>
-                                <div class="relative">
-                                    <i class="fa fa-search absolute center-y"></i>
-                                    <input class="form-control px-4" style="border: none !important;" type="text" list="suggestions" id="query-input" name="query" placeholder="Provider name, Hospital or clinic name">
-                                    <datalist id="suggestions"></datalist>
-                                </div>
+            <div class="p-5 rounded my-5" style="background-color: rgb(230,230,230)" >
+                <form action="{% url 'search' %}" class=" search bg-white" method="get" style="overflow: hidden;  border-radius: 8px">
+                    {% comment %} <div class="input-group w-100">
+                        <input list="suggestions" id="query-input" name="query" type="text" class="form-control"
+                            style="width:60%;" placeholder="Search">
+                        <datalist id="suggestions">
 
+                        </datalist>
+                        <select id="query-category" name="category" class="form-control" style="width:10%;">
+                            <option selected value="test">Test</option>
+                            <option value="service">Service</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div> {% endcomment %}
+                    <div class="row border rounded p-4 center-x relative" >
+                        <div class="d-flex flex-column pl-4 col-6 border-right">
+                            <label for="query-input" class="text-muted">Search</label>
+                            <div class="relative">
+                                <i class="fa fa-search absolute center-y"></i>
+                                <input class="form-control px-4" style="border: none !important;" type="text" list="suggestions" id="query-input" name="query" placeholder="Name, Hospital or clinic name">
+                                <datalist id="suggestions"></datalist>
                             </div>
-                            <div class="d-flex flex-column col-5">
-                                <label for="location" class="text-muted">Location</label>
-                                <div class="relative">
-                                    <i class="fa fa-search absolute center-y"></i>
-                                    <input class="form-control px-4" style="border: none !important;" name="location" type="text" id="location" placeholder="Location, Postcode or Address">
-                                </div>
-
-                            </div>
-                            <button class="col-2 btn btn-primary-light" type="submit"><i class="fa fa-search"></i> </button>
 
                         </div>
-                    </form>
-                    <script>
-                        const query_input = document.getElementById("query-input");
-                        const query_category = document.getElementById("location");
-                        query_input.addEventListener("input", function (event) {
-                            fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const suggestions = document.getElementById("suggestions");
-                                    suggestions.innerHTML = "";
-                                    data.forEach(suggestion => {
-                                        const option = document.createElement("option");
-                                        option.value = suggestion;
-                                        suggestions.appendChild(option);
-                                    });
+                        <div class="d-flex flex-column col-5">
+                            <label for="location" class="text-muted">Location</label>
+                            <div class="relative">
+                                <i class="fa fa-search absolute center-y"></i>
+                                <input class="form-control px-4" style="border: none !important;" name="location" type="text" id="location" placeholder="Location, Postcode or Address">
+                            </div>
+
+                        </div>
+                        <button class="col-1 btn btn-primary-light" type="submit"><i class="fa fa-search"></i> </button>
+
+                    </div>
+                </form>
+                <script>
+                    const query_input = document.getElementById("query-input");
+                    const query_category = document.getElementById("location");
+                    query_input.addEventListener("input", function (event) {
+                        fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const suggestions = document.getElementById("suggestions");
+                                suggestions.innerHTML = "";
+                                data.forEach(suggestion => {
+                                    const option = document.createElement("option");
+                                    option.value = suggestion;
+                                    suggestions.appendChild(option);
                                 });
-                        });
-                    </script>
-                </div>
+                            });
+                    });
+                </script>
+            </div>
 
         </div> <!-- container //  -->
     </section>

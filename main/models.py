@@ -42,20 +42,17 @@ class Test(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     billing_code = models.CharField(max_length=100)
-    tz_std_tariff = models.IntegerField()
+    tz_std_tariff = models.IntegerField(default=0)
     sample_type = models.CharField(max_length=100)
     tat = models.CharField(max_length=100)
     tat_unit = models.CharField(max_length=100)
     available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    unit = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
 
-    def get_price(self):
-        return self.unit * self.tz_std_tariff
     
 
 class TestSet(models.Model):
@@ -63,6 +60,7 @@ class TestSet(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     tests = models.ManyToManyField(Test, related_name='tests')
+    available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

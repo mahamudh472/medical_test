@@ -66,7 +66,7 @@
                                                 <button class="btn btn-light counter-btn increment">+</button>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td style="vertical-align: middle;">
                                             TZS <span id="amount{{ test.test.id }}">{{ test.get_price }}</span>
                                         </td>
                                         <td class="text-right">
@@ -99,7 +99,7 @@
                     <div class="card my-4">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-8">
+                                <div >
                                     <input type="text" class="form-control" placeholder="Discount Voucher/Coupon">
                                 </div>
                                 <div class="col-4">
@@ -107,7 +107,7 @@
                                 </div>
 
                             </div>
-                            <table class="table table-borderless my-3 col-6">
+                            <table class="table table-borderless my-3 col-4">
                                 <tr>
                                     <th>Sub Total</th>
                                     <td id="sub_total">{{ request.first.get_sub_total }}</td>
