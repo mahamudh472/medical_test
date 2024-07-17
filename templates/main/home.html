@@ -14,7 +14,7 @@
                      style="height: 300px; width: 100%; object-fit: cover">
             </div>
             <div class="col-lg  col-md-6 col-sm-12 col my-5">
-                    <form action="{% url 'search' %}" class="search">
+                    <form action="{% url 'search' %}" class="search" method="get">
 {#                        <div class="input-group w-100">#}
 {#                            <input list="suggestions" id="query-input" name="query" type="text" class="form-control"#}
 {#                                style="width:60%;" placeholder="Search">#}
@@ -45,7 +45,7 @@
                                 <label for="location" class="text-muted">Location</label>
                                 <div class="relative">
                                     <i class="fa fa-search absolute center-y"></i>
-                                    <input class="form-control px-4" style="border: none !important;" type="text" id="location" placeholder="Location, Postcode or Address">
+                                    <input class="form-control px-4" style="border: none !important;" name="location" type="text" id="location" placeholder="Location, Postcode or Address">
                                 </div>
 
                             </div>

@@ -33,7 +33,7 @@
             <div class="row">
                 <aside class="col-12">
                     <div class="card">
-                        {% if request.tests.all %}
+                        {% if request %}
                             <table class="table table-borderless table-shopping-cart">
                                 <thead class="text-muted">
                                 <tr class="small text-uppercase">
@@ -44,16 +44,16 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for test in request.tests.all %}
+                                {% for test in request %}
                                     <tr data-test-id="{{ test.id }}">
                                         <td>
                                             <figure class="itemside align-items-center">
                                                 <figcaption class="info">
                                                     <a href="#" class="title text-dark">
-                                                        {{ test.name }}
+                                                        {{ test.test.name }}
                                                     </a>
                                                     <p class="text-muted small">
-                                                        <i class="far fa-building"></i> {{ test.organization.name }}
+                                                        Sample Type: {{ test.test.sample_type }}
                                                     </p>
                                                 </figcaption>
                                             </figure>
@@ -67,7 +67,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            TZS <span id="amount{{ test.id }}">{{ test.get_price }}</span>
+                                            TZS <span id="amount{{ test.test.id }}">{{ test.get_price }}</span>
                                         </td>
                                         <td class="text-right">
                                             <a href="{% url "remove_request" test.id %}"
@@ -79,7 +79,7 @@
                             </table>
                             <hr>
                             <div class="p-3 pt-0">
-                                Total: {{ request.tests.all|length }} tests
+                                Total: {{ request|length }} tests
                             </div>
                         {% else %}
                             <div class="p-3" role="alert">
@@ -110,7 +110,7 @@
                             <table class="table table-borderless my-3 col-6">
                                 <tr>
                                     <th>Sub Total</th>
-                                    <td id="sub_total">{{ request.get_sub_total }}</td>
+                                    <td id="sub_total">{{ request.first.get_sub_total }}</td>
                                 </tr>
                                 <tr>
                                     <th>Discount</th>
@@ -122,7 +122,7 @@
                                 </tr>
                                 <tr>
                                     <th>Total</th>
-                                    <td id="total">{{ request.get_sub_total }}</td>
+                                    <td id="total">{{ request.first.get_sub_total }}</td>
                                 </tr>
 
 
@@ -130,7 +130,7 @@
                         </div>
                         <div class="d-flex justify-content-between p-4">
                             <a href="{% url 'all_tests' %}"><button class="btn btn-outline-primary">Add more Task</button></a>
-                            <button class="btn btn-outline-success">Proceed to checkout</button>
+                            <a href="{% url 'checkout' %}" class="btn btn-outline-success">Proceed to checkout</a>
                         </div>
                     </div>
                 </div>

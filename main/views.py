@@ -4,6 +4,7 @@ from .models import Test, Organization, TestSet, Service
 from .utils import data
 from django.db.models import Q
 import datetime
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -57,7 +58,7 @@ def search(request):
     services = Service.objects.filter(
         Q(name__icontains=query) |
         Q(organization__name__icontains=query) &
-        Q(location__icontains=query)
+        Q(location__icontains=location)
     )
     services = services.distinct()
 
@@ -68,9 +69,16 @@ def search(request):
         Q(organization__name__icontains=query)
     )
     tests = tests.distinct()
+    paginator = Paginator(tests, 8)
+    page_num = request.GET.get('page')
+    page_obj = paginator.get_page(page_num)
+    total_item = tests.count()
     context = {
-        'tests': tests,
+        'tests': page_obj,
         'services': services,
+        'query': query,
+        'location': location,
+        'total_item': total_item,
     }
     return render(request, "main/search.html", context)
 

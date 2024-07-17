@@ -3,38 +3,38 @@
 
 {% block content %}
 
-<section class="section-pagetop bg">
-    <div class="container">
-        <h2 class="title-page">Search tests</h2>
-    </div>
-    <!-- container //  -->
-</section>
-<!-- ========================= SECTION INTRO END// ========================= -->
+    <section class="section-pagetop bg">
+        <div class="container">
+            <h2 class="title-page">Search tests</h2>
+        </div>
+        <!-- container //  -->
+    </section>
+    <!-- ========================= SECTION INTRO END// ========================= -->
 
-<!-- ========================= SECTION CONTENT ========================= -->
-<section class="section-content padding-y">
-    <div class="container">
-        <div class="row">
-            <!-- col.// -->
-            <main class="col-md-12">
-                <header class="border-bottom mb-4 pb-3">
-                    <div class="form-inline">
+    <!-- ========================= SECTION CONTENT ========================= -->
+    <section class="section-content padding-y">
+        <div class="container">
+            <div class="row">
+                <!-- col.// -->
+                <main class="col-md-12">
+                    <header class="border-bottom mb-4 pb-3">
+                        <div class="form-inline">
                         <span class="mr-md-auto">
-                            {{ tests|length }} Items found
+                            {{ total_item }} Items found
                         </span>
-                    </div>
-                </header>
-                <!-- sect-heading -->
+                        </div>
+                    </header>
+                    <!-- sect-heading -->
 
-                <div class="row">
-                    {% for test in tests %}
-                        {% include "components/test.html" %}
-                    {% endfor %}
-                    
-                </div> <!-- row.// -->
-                <!-- row end.// -->
+                    <div class="row">
+                        {% for test in tests %}
+                            {% include "components/test.html" %}
+                        {% endfor %}
 
-                {% comment %} <nav class="mt-4" aria-label="Page navigation sample">
+                    </div> <!-- row.// -->
+                    <!-- row end.// -->
+
+                    {% comment %} <nav class="mt-4" aria-label="Page navigation sample">
                     <ul class="pagination">
                         <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
                         <li class="page-item active"><a class="page-link" href="#">1</a></li>
@@ -43,11 +43,32 @@
                         <li class="page-item"><a class="page-link" href="#">Next</a></li>
                     </ul>
                 </nav> {% endcomment %}
-            </main>
-            <!-- col.// -->
-        </div>
-    </div>
-    <!-- container .//  -->
-</section>
+                </main>
+                <!-- col.// -->
+            </div>
+            {% if tests %}
+                <nav class="mt-4" aria-label="Page navigation sample">
+                    <ul class="pagination">
+
+                        <li class="page-item {% if not tests.has_previous %} disabled {% endif %}"><a class="page-link"
+                                {% if tests.has_previous %}
+                                                                                                      href="?query={{ query }}&location={{ location }}&page={{ tests.previous_page_number }}" {% endif %}>Previous</a>
+                        </li>
+                        <li class="page-item "><a class="page-link"
+                                                  href="?query={{ query }}&location={{ location }}&page=1">1</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">{{ tests.number }}</a></li>
+                        <li class="page-item"><a class="page-link"
+                                                 href="?query={{ query }}&location={{ location }}&page={{ tests.paginator.num_pages }}">{{ tests.paginator.num_pages }}</a>
+                        </li>
+                        <li class="page-item {% if not tests.has_next %} disabled {% endif %}"><a class="page-link" {% if tests.has_next %}
+                                                                                                  href="?query={{ query }}&location={{ location }}&page={{ tests.next_page_number }}" {% endif %}>Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                </div>
+            {% endif %}
+        <!-- container .//  -->
+    </section>
+
 
 {% endblock %}
