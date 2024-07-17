@@ -1,4 +1,5 @@
 {% extends "include/base.html" %}
+{% load static %}
 
 {% block content %}
     <style>
@@ -31,7 +32,7 @@
             <!-- ============================ COMPONENT 1 ================================= -->
 
             <div class="row">
-                <aside class="col-12">
+                <aside class="col-md-9">
                     <div class="card">
                         {% if request %}
                             <table class="table table-borderless table-shopping-cart">
@@ -90,11 +91,38 @@
                     <!-- card.// -->
                 </aside>
                 <!-- col.// -->
+                <aside class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <dl class="dlist-align">
+                                <dt>Total price:</dt>
+                                <dd class="text-right"> TZS {{ request.first.get_sub_total }}</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Tax:</dt>
+                                <dd class="text-right">TZS 00</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Total:</dt>
+                                <dd style="white-space: nowrap" class="text-right text-dark b"><strong>TZS {{ request.first.get_sub_total }}</strong></dd>
+                            </dl>
+                            <hr>
+                            
+                            <p class="text-center mb-3">
+                                <img src="{% static 'images/misc/payments.png' %}" height="26">
+                            </p>
+                            
+                            <a href="{% url 'all_tests' %}"><button class="w-100 btn btn-outline-success">Add more Task</button></a>
+                            <a href="{% url 'checkout' %}" class="w-100 btn btn-primary mt-2">Proceed to checkout</a>
+    
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
+                </aside> <!-- col.// -->
             </div>
             <!-- row.// -->
             <!-- ============================ COMPONENT 1 END .// ================================= -->
 
-            <div class="row">
+            {% comment %} <div class="row">
                 <div class="col-12">
                     <div class="card my-4">
                         <div class="card-body">
@@ -134,7 +162,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
 
         </div>
         <!-- container .//  -->

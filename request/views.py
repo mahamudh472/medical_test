@@ -105,15 +105,18 @@ def favorite_list(request):
 def set_add_to_cart(request, set_id):
     test_set = TestSet.objects.get(id=set_id)
     if request.user.is_authenticated:
-        req, created = Request.objects.get_or_create(user=request.user)
-        req.tests.add(*test_set.tests.all())
+        for test in test_set.tests.all():
+            req = Request.objects.get_or_create(user=request.user, test=test)
+            req[0].save()
+            
     else:
         key = request.session.session_key
         if not key:
             request.session.create()
             key = request.session.session_key
-        req, created = Request.objects.get_or_create(anynomous_user=key)
-        req.tests.add(*test_set.tests.all())
+        for test in test_set.tests.all():
+            req = Request.objects.get_or_create(anynomous_user=key, test=test)
+            req[0].save()
 
     messages.success(request, "Test set added to request")
     return redirect(request.META.get('HTTP_REFERER'))
