@@ -54,13 +54,19 @@
                                 {% if tests.has_previous %}
                                                                                                       href="?query={{ query }}&location={{ location }}&page={{ tests.previous_page_number }}" {% endif %}>Previous</a>
                         </li>
-                        <li class="page-item "><a class="page-link"
-                                                  href="?query={{ query }}&location={{ location }}&page=1">1</a></li>
+                        {% if  not tests.number == 1 %}
+                            <li class="page-item "><a class="page-link"
+                                                      href="?query={{ query }}&location={{ location }}&page=1">1</a>
+                            </li>
+                        {% endif %}
                         <li class="page-item active"><a class="page-link" href="#">{{ tests.number }}</a></li>
-                        <li class="page-item"><a class="page-link"
-                                                 href="?query={{ query }}&location={{ location }}&page={{ tests.paginator.num_pages }}">{{ tests.paginator.num_pages }}</a>
-                        </li>
-                        <li class="page-item {% if not tests.has_next %} disabled {% endif %}"><a class="page-link" {% if tests.has_next %}
+                        {% if  not tests.number == tests.paginator.num_pages %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="?query={{ query }}&location={{ location }}&page={{ tests.paginator.num_pages }}">{{ tests.paginator.num_pages }}</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item {% if not tests.has_next %} disabled {% endif %}"><a class="page-link"
+                                {% if tests.has_next %}
                                                                                                   href="?query={{ query }}&location={{ location }}&page={{ tests.next_page_number }}" {% endif %}>Next</a>
                         </li>
                     </ul>
