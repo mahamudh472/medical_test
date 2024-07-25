@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from main.models import Test, TestSet
+from main.models import Test, TestSet, Service
 from .models import Request, Favorite
 from django.contrib import messages
 from django.views.decorators.http import require_POST
@@ -150,7 +150,9 @@ def checkout(request):
             request.session.create()
             key = request.session.session_key
         requests = Request.objects.filter(anynomous_user=key)
+    services = Service.objects.all()
     context = {
-        'request': requests
+        'request': requests,
+        'service': services
     }
     return render(request, "request/place-order.html", context)

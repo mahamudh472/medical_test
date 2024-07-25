@@ -2,36 +2,13 @@
 <script src="https://unpkg.com/htmx.org@2.0.0"></script>
 
 <header class="section-header">
-    <nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarTop4">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link"> English </a>
-
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link"> USD </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li><a href="#" class="nav-link"> <i class="fa fa-envelope"></i> Email </a></li>
-                    <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
-                </ul> <!-- list-inline //  -->
-            </div> <!-- navbar-collapse .// -->
-        </div> <!-- container //  -->
-    </nav>
-
+    
     <section class="header-main border-bottom">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-2 col-md-3 col-6">
                     <a href="/" class="brand-wrap">
-                        <img class="logo" src="{% static 'images/300x67.png' %}">
+                        <img class="logo" style="max-height: 54px" src="{% static 'images/300x67.png' %}">
                     </a> <!-- brand-wrap.// -->
                 </div>
                 <div class="col-lg-7"></div>
@@ -89,8 +66,8 @@
                  <!-- col.// -->
                 <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
                     <div class="d-flex justify-content-end mb-3 mb-lg-0">
-                        <div class="widget-header">
-                            <small class="title text-muted">Organizations</small>
+                        <div class="widget-header d-flex align-items-center justify-content-center">
+                            
                             <div>
                                 <a href="./signin.html">Sign in</a> <span class="dark-transp"> | </span>
                                 <a href="./register.html"> Register</a>

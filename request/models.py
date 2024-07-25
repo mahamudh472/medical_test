@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from main.models import Test, Service
 
+
 # Create your models here.
 
 class Request(models.Model):
@@ -28,7 +29,6 @@ class Request(models.Model):
     def get_price(self):
         return self.unit * self.test.tz_std_tariff
 
-    
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -39,7 +39,7 @@ class Favorite(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
 
 """
 1. Each Test Request Should Have a Unique Alphanumeric ID - ALL Caps
@@ -55,6 +55,7 @@ STATUS_CHOICES = (
     ('CANCELLED', 'CANCELLED'),
 )
 
+
 class Order(models.Model):
     alphanumeric_id = models.CharField(max_length=20, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -69,7 +70,7 @@ class Order(models.Model):
     insurance_membership_id = models.CharField(max_length=50, null=True, blank=True)
     insurance_expiry_date = models.DateField(null=True, blank=True)
     # Collection Site 
-    collection_centre = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True, blank=True)
+    collection_center = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True, blank=True)
     collection_home = models.TextField(null=True, blank=True)
     collection_distance = models.CharField(max_length=200, null=True, blank=True)
     collection_fee = models.FloatField(default=0)
