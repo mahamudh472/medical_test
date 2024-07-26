@@ -114,7 +114,7 @@ def set_add_to_cart(request, set_id):
         for test in test_set.tests.all():
             req = Request.objects.get_or_create(user=request.user, test=test)
             req[0].save()
-            
+
     else:
         key = request.session.session_key
         if not key:
@@ -168,15 +168,35 @@ def CreateStripeCheckoutSessionView(request):
     if request.method == 'POST':
         price = request.POST.get('price')
         alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
+
+        # check the mobile number
+        mobile = str(request.POST.get('mobile'))
+        if not mobile.startswith("+255"):
+            mobile = "+255" + mobile
+
         order = Order.objects.create(
             alphanumeric_id=alphanumeric_id,
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
             email=request.POST.get('email'),
-            mobile=request.POST.get('mobile'),
-            address='test' # if user select collection center, save the center address
+            mobile=mobile,
+            address='test'  # if user select collection center, save the center address
         )
+        collection = request.POST.get('delivery-option')
+        if str(collection) == "collection-center":
+            location = request.POST.get('collection-center')
+            center = Service.objects.get(location=location)
+            order.collection_center = center
+        elif str(collection) == "collection-home":
+            address = request.POST.get('address')
+            order.address = address
+        insurance = request.POST.get('insurance_status')
+        if insurance == "yes":
+            order.insurance_membership_id = request.POST.get('insurance-id')
+            order.insurance_expiry_date = request.POST.get('expiry-date')
+            return redirect('success', alphanumeric_id)
+        order.save()
 
         domain_url = request.headers['Referer'].split('/request')[0]
         print(domain_url)
@@ -200,7 +220,7 @@ def CreateStripeCheckoutSessionView(request):
                     }
                 ],
                 metadata={
-                    'order_id': order.id, # pass order ID here
+                    'order_id': order.id,  # pass order ID here
                 }
             )
             return redirect(checkout_session.url, code=303)
@@ -211,11 +231,26 @@ def CreateStripeCheckoutSessionView(request):
 
 def success(request, alphanumeric_id):
     # make order complete, remove cart items
+    order = Order.objects.get(alphanumeric_id=alphanumeric_id)
+    order.status = "COMPLETED"
+    order.save()
+    if request.user.is_authenticated:
+        req = Request.objects.filter(user=request.user)
+        req.delete()
+    else:
+        key = request.session.session_key
+        if not key:
+            request.session.create()
+            key = request.session.session_key
+        req = Request.objects.filter(anynomous_user=key)
+        req.delete()
+
     return render(request, 'request/success.html')
+
 
 def cancelled(request, alphanumeric_id):
     # make order canceled
+    order = Order.objects.get(alphanumeric_id=alphanumeric_id)
+    order.status = "CANCELLED"
+    order.save()
     return render(request, 'request/cancel.html')
-
-
-
