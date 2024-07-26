@@ -1,9 +1,15 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from main.models import Test, TestSet, Service
-from .models import Request, Favorite
+from .models import Request, Favorite, Order
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+import stripe
+from django.conf import settings
+import json
+import random
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # Create your views here.
@@ -156,3 +162,60 @@ def checkout(request):
         'service': services
     }
     return render(request, "request/place-order.html", context)
+
+
+def CreateStripeCheckoutSessionView(request):
+    if request.method == 'POST':
+        price = request.POST.get('price')
+        alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
+        order = Order.objects.create(
+            alphanumeric_id=alphanumeric_id,
+            user=request.user if request.user.is_authenticated else None,
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name'),
+            email=request.POST.get('email'),
+            mobile=request.POST.get('mobile'),
+            address='test' # if user select collection center, save the center address
+        )
+
+        domain_url = request.headers['Referer'].split('/request')[0]
+        print(domain_url)
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + '/request/success/' + alphanumeric_id,
+                cancel_url=domain_url + '/request/cancel/' + alphanumeric_id,
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'tzs',
+                            'unit_amount': int(float(price) * 100),
+                            'product_data': {
+                                'name': 'Cloud Script Order',
+                            },
+                        },
+                        'quantity': 1,
+                    }
+                ],
+                metadata={
+                    'order_id': order.id, # pass order ID here
+                }
+            )
+            return redirect(checkout_session.url, code=303)
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    return JsonResponse({'error': 'Invalid request'})
+
+
+def success(request, alphanumeric_id):
+    # make order complete, remove cart items
+    return render(request, 'request/success.html')
+
+def cancelled(request, alphanumeric_id):
+    # make order canceled
+    return render(request, 'request/cancel.html')
+
+
+

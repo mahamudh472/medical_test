@@ -41,13 +41,6 @@ class Favorite(models.Model):
         return self.user.username
 
 
-"""
-1. Each Test Request Should Have a Unique Alphanumeric ID - ALL Caps
-User Requesting will Have to input First Name  + Family Name , Email, Mobile No in INternational FOrmat ( +255) and Addresss.)
-2. Each Request Should Be Searchable For Status
-3. Checkout Should Involve Stripe - We will Discuss this
-4. The Checkout Stage Should have an Options for Insurance Cover - This option Will By pass Payment and Prompt User To enter 1. Insurance Membership ID 2. Expiry Date. Then proceed to confirm the request via Email.
-"""
 
 STATUS_CHOICES = (
     ('PENDING', 'PENDING'),

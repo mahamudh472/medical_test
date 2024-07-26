@@ -133,3 +133,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+STRIPE_PUBLISHABLE_KEY = REMOVED
+STRIPE_SECRET_KEY = REMOVED
+STRIPE_ENDPOINT_SECRET = REMOVED
+
+
+
+
+
+
+
