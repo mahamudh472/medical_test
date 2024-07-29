@@ -6,8 +6,9 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 import stripe
 from django.conf import settings
-import json
+import requests
 import random
+import googlemaps
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -166,7 +167,7 @@ def checkout(request):
 
 def CreateStripeCheckoutSessionView(request):
     if request.method == 'POST':
-        price = request.POST.get('price')
+        price = float(request.POST.get('price'))
         alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
 
         # check the mobile number
@@ -191,6 +192,29 @@ def CreateStripeCheckoutSessionView(request):
         elif str(collection) == "collection-home":
             address = request.POST.get('address')
             order.address = address
+            delivery_type = request.POST.get("delivery_type")
+            service_location = request.POST.get('collection-center')
+            api_key = settings.GOOGLE_MAPS_API_KEY
+
+            gmaps = googlemaps.Client(key=api_key)
+            try:
+                response = gmaps.distance_matrix(
+                    origins=service_location,
+                    destinations=address,
+                    mode="driving"
+                )
+                distance_meters = response['rows'][0]['elements'][0]['distance']['value']
+                distance_text = response['rows'][0]['elements'][0]['distance']['text']
+                service = Service.objects.get(location=service_location)
+                if delivery_type == "standard":
+                    price += (distance_meters/1000)*service.organization.base_cost+1000
+                else:
+                    price += (distance_meters/1000)*service.organization.base_cost+5000
+
+
+            except Exception as e:
+                print(f"Error calculating distance: {e}")
+                return None
         insurance = request.POST.get('insurance_status')
         if insurance == "yes":
             order.insurance_membership_id = request.POST.get('insurance-id')

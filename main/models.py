@@ -8,6 +8,9 @@ class Organization(models.Model):
     description = models.TextField()
     admin = models.ForeignKey(User, on_delete=models.CASCADE)
     members = models.ManyToManyField(User, related_name='members')
+    base_cost = models.FloatField(default=0)
+    base_cost_currency = models.CharField(max_length=20, default='TSZ')
+    cost_per_km = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
