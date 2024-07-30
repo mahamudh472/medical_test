@@ -200,7 +200,9 @@
                                                 if (response.delivery_fee){
                                                     $('#delivery-fee').text('Delivery Fee: ' + response.delivery_fee);
                                                     $('#deliveryFee').attr('value', response.delivery_fee)
-                                                    $('#place_order').attr('disabled', false)
+                                                    $('#place_order').attr('disabled', false);
+                                                    $('#d_fee').text(response.delivery_fee + " TZS" );
+                                                    $('#total_price').text((parseFloat({{ request.first.get_sub_total }})+parseFloat(response.delivery_fee)) + " TZS" )
                                                 }else{
                                                     $('#delivery-fee').text('Invalid address');
                                                     $('#place_order').attr('disabled', true)
@@ -317,16 +319,16 @@
                         <div class="card-body">
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
-                                <dd class="text-right"> TZS {{ request.first.get_sub_total }}</dd>
+                                <dd class="text-right"> {{ request.first.get_sub_total }} TZS</dd>
                             </dl>
                             <dl class="dlist-align">
-                                <dt>Tax:</dt>
-                                <dd class="text-right">TZS 00</dd>
+                                <dt>Delivery fee:</dt>
+                                <dd class="text-right" id="d_fee"> 00 TZS</dd>
                             </dl>
                             <dl class="dlist-align">
                                 <dt>Total:</dt>
                                 <dd class="text-right text-dark b">
-                                    <strong>TZS {{ request.first.get_sub_total }}</strong></dd>
+                                    <strong id="total_price">{{ request.first.get_sub_total }} TZS</strong></dd>
                             </dl>
                             <hr>
                             <p class="text-center mb-3">
