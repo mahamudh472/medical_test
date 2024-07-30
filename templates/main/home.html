@@ -53,6 +53,23 @@
 
                     </div>
                 </form>
+                <script src="https://maps.googleapis.com/maps/api/js?key=REMOVED&libraries=places"></script>
+                        <script>
+                            // Initialize Google Maps Autocomplete
+                            function initializeAutocomplete() {
+                                const addressInput = document.getElementById('location');
+
+                                // Create the autocomplete object and associate it with the textarea
+                                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                                    componentRestrictions: {country: 'TZ'} // Optional: Restrict to a specific country
+                                });
+
+                                
+                            }
+
+                            // Call the initialize function when the window loads
+                            google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
+                        </script>
                 <script>
                     const query_input = document.getElementById("query-input");
                     const query_category = document.getElementById("location");
