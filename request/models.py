@@ -24,7 +24,7 @@ class Request(models.Model):
         else:
             for obj in Request.objects.filter(anynomous_user=self.anynomous_user):
                 sub_total += obj.unit * obj.test.tz_std_tariff
-        return sub_total
+        return "{:.2f}".format(sub_total)
 
     def get_price(self):
         return self.unit * self.test.tz_std_tariff

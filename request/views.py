@@ -165,6 +165,47 @@ def checkout(request):
     return render(request, "request/place-order.html", context)
 
 
+def calculate_delivery_fee(request):
+    if request.method == 'POST':
+        # Extract data from POST request
+        address = request.POST.get('address')
+        delivery_type = request.POST.get('delivery_type')
+        service_location = request.POST.get('service_location')
+        api_key = settings.GOOGLE_MAPS_API_KEY
+
+        # Initialize Google Maps client
+        gmaps = googlemaps.Client(key=api_key)
+
+        try:
+            # Call Google Maps API for distance calculation
+            response = gmaps.distance_matrix(
+                origins=service_location,
+                destinations=address,
+                mode="driving"
+            )
+
+            # Extract distance
+            distance_meters = response['rows'][0]['elements'][0]['distance']['value']
+
+            # Get the service details from the database
+            service = Service.objects.get(location=service_location)
+
+            # Calculate delivery fee based on the delivery type
+            if delivery_type == "standard":
+                delivery_fee = (distance_meters / 1000) * service.organization.cost_per_km + 1000
+            else:
+                delivery_fee = (distance_meters / 1000) * service.organization.cost_per_km + 5000
+
+            # Return JSON response
+            return JsonResponse({'delivery_fee': f"{delivery_fee:.2f}"})  # Format fee as currency
+
+        except Exception as e:
+            print(f"Error calculating distance: {e}")
+            return JsonResponse({'error': 'Unable to calculate delivery fee. Please try again later.'})
+
+    return JsonResponse({'error': 'Invalid request method.'})
+
+
 def CreateStripeCheckoutSessionView(request):
     if request.method == 'POST':
         price = float(request.POST.get('price'))
@@ -192,29 +233,9 @@ def CreateStripeCheckoutSessionView(request):
         elif str(collection) == "collection-home":
             address = request.POST.get('address')
             order.address = address
-            delivery_type = request.POST.get("delivery_type")
-            service_location = request.POST.get('collection-center')
-            api_key = settings.GOOGLE_MAPS_API_KEY
+            delivery_fee = request.POST.get('delivery_fee')
+            price += float(delivery_fee)
 
-            gmaps = googlemaps.Client(key=api_key)
-            try:
-                response = gmaps.distance_matrix(
-                    origins=service_location,
-                    destinations=address,
-                    mode="driving"
-                )
-                distance_meters = response['rows'][0]['elements'][0]['distance']['value']
-                distance_text = response['rows'][0]['elements'][0]['distance']['text']
-                service = Service.objects.get(location=service_location)
-                if delivery_type == "standard":
-                    price += (distance_meters/1000)*service.organization.base_cost+1000
-                else:
-                    price += (distance_meters/1000)*service.organization.base_cost+5000
-
-
-            except Exception as e:
-                print(f"Error calculating distance: {e}")
-                return None
         insurance = request.POST.get('insurance_status')
         if insurance == "yes":
             order.insurance_membership_id = request.POST.get('insurance-id')
