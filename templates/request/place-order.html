@@ -119,60 +119,104 @@
 
                                         {% endfor %}
                                     </select>
+                                    <input type="hidden" name="delivery_fee" id="deliveryFee" value="">
                                 </div> <!-- card body .// -->
                             </div> <!-- collapse .// -->
                         </div> <!-- card.// -->
                         <div class="card">
                             <header class="card-header">
-
                                 <label class="form-check" data-toggle="collapse" data-target="#collection_home">
                                     <input class="form-check-input" name="delivery-option" type="radio"
                                            value="collection-home">
-                                    <h6 class="form-check-label"> Collection Home </h6>
+                                    <h6 class="form-check-label">Collection Home</h6>
                                 </label>
                             </header>
                             <div id="collection_home" class="collapse" data-parent="#accordion_pay">
                                 <div class="card-body">
                                     <h4 class="card-title mb-4">Delivery info</h4>
-
-
                                     <div class="row">
-                                        
-                                            <div class="fs-4 d-inline-block mx-3">Delivery Type: </div>
-                                            <div class="form-check mx-2">
-                                                <input class="form-check-input" type="radio" name="delivery_type"
-                                                       id="flexRadioDefault1" value="standard" checked>
-                                                <label class="form-check-label" for="flexRadioDefault1">
-                                                    Standard
-                                                </label>
-                                            </div>
-                                            
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="delivery_type"
-                                                       id="flexRadioDefault2" value="express" >
-                                                <label class="form-check-label" for="flexRadioDefault2">
-                                                    Express
-                                                </label>
-                                            </div>
-                                       <select class="form-control mx-3 my-2" name="collection-center" id="center_for_home">
-                                        <option value="" disabled selected>Select a collection center.</option>
-                                        {% for ser in service %}
-                                            <optgroup label="{{ ser.name }}">
-                                                <option value="{{ ser.location }}">{{ ser.location }}</option>
-                                            </optgroup>
-
-                                        {% endfor %}
-                                    </select>
+                                        <div class="fs-4 d-inline-block mx-3">Delivery Type:</div>
+                                        <div class="form-check mx-2">
+                                            <input class="form-check-input" type="radio" name="delivery_type"
+                                                   id="flexRadioDefault1"
+                                                   value="standard" checked>
+                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                Standard
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="delivery_type"
+                                                   id="flexRadioDefault2"
+                                                   value="express">
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                Express
+                                            </label>
+                                        </div>
+                                        <select class="form-control mx-3 my-2" name="collection-center"
+                                                id="center_for_home">
+                                            <option value="" disabled selected>Select a collection center.</option>
+                                            {% for ser in service %}
+                                                <optgroup label="{{ ser.name }}">
+                                                    <option value="{{ ser.location }}">{{ ser.location }}</option>
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
                                         <div class="form-group col-12 my-2">
                                             <label>Address*</label>
                                             <textarea class="form-control" rows="2" name="address"
                                                       id="address"></textarea>
                                         </div>
+                                        <!-- Add a div to display the delivery fee -->
+                                        <div class="col-12 my-2">
+                                            <span id="delivery-fee" class="text-muted">Delivery Fee: </span>
+                                        </div>
                                     </div> <!-- row.// -->
-
                                 </div> <!-- card body .// -->
                             </div> <!-- collapse .// -->
                         </div> <!-- card.// -->
+                        <script>
+                            $(document).ready(function () {
+                                // Event listener for when the user focuses out of the address field
+                                $('#address').on('blur', function () {
+                                    // Get the values from the form
+                                    var address = $(this).val();
+                                    var deliveryType = $('input[name="delivery_type"]:checked').val();
+                                    var serviceLocation = $('#center_for_home').val();
+
+                                    // Check if all fields are filled
+                                    if (address && deliveryType && serviceLocation) {
+                                        // Send Ajax request to Django view
+                                        $.ajax({
+                                            url: '{% url "calculate_delivery_fee" %}', // Update with your view URL
+                                            type: 'POST',
+                                            data: {
+                                                'address': address,
+                                                'delivery_type': deliveryType,
+                                                'service_location': serviceLocation,
+                                                'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token
+                                            },
+                                            success: function (response) {
+                                                // Update the delivery fee
+                                                if (response.delivery_fee){
+                                                    $('#delivery-fee').text('Delivery Fee: ' + response.delivery_fee);
+                                                    $('#deliveryFee').attr('value', response.delivery_fee)
+                                                    $('#place_order').attr('disabled', false)
+                                                }else{
+                                                    $('#delivery-fee').text('Invalid address');
+                                                    $('#place_order').attr('disabled', true)
+                                                }
+                                                
+                                            },
+                                            error: function (xhr, status, error) {
+                                                console.error('Error calculating delivery fee:', error);
+                                            }
+                                        });
+                                    } else {
+                                        $('#delivery-fee').text('Please fill all fields to calculate delivery fee.');
+                                    }
+                                });
+                            });
+                        </script>
 
                     </article>
 
@@ -265,7 +309,7 @@
                     </script>
 
                     <input type="hidden" name="price" value="{{ request.first.get_sub_total }}">
-                    <button class="btn btn-primary btn-block"> Place Order</button>
+                    <button class="btn btn-primary btn-block" id="place_order"> Place Order</button>
 
                 </form> <!-- col.// -->
                 <aside class="col-md-4">

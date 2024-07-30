@@ -14,4 +14,5 @@ urlpatterns = [
     path("create-checkout-session/", views.CreateStripeCheckoutSessionView,name="create-checkout-session"),
     path('success/<str:alphanumeric_id>', views.success, name='success'),
     path('cancel/<str:alphanumeric_id>', views.cancelled, name='cancel'),
+    path('calculate-delivery-fee/', views.calculate_delivery_fee, name='calculate_delivery_fee'),
 ]
