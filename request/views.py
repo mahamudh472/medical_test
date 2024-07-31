@@ -172,7 +172,9 @@ def calculate_delivery_fee(request):
         delivery_type = request.POST.get('delivery_type')
         service_location = request.POST.get('service_location')
         api_key = settings.GOOGLE_MAPS_API_KEY
-
+        print(address)
+        print(delivery_type)
+        print(service_location)
         # Initialize Google Maps client
         gmaps = googlemaps.Client(key=api_key)
 

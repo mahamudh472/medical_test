@@ -163,8 +163,8 @@
                                         </select>
                                         <div class="form-group col-12 my-2">
                                             <label>Address*</label>
-                                            <textarea class="form-control" rows="2" name="address"
-                                                      id="address"></textarea>
+                                            <input class="form-control"  name="address"
+                                                      id="address">
                                         </div>
                                         <!-- Add a div to display the delivery fee -->
                                         <div class="col-12 my-2">
@@ -189,51 +189,55 @@
 
                             // Call the initialize function when the window loads
                             google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
-                        </script>
-                        <script>
-                            $(document).ready(function () {
-                                // Event listener for when the user focuses out of the address field
-                                $('#address').on('blur', function () {
-                                    // Get the values from the form
-                                    var address = $(this).val();
-                                    var deliveryType = $('input[name="delivery_type"]:checked').val();
-                                    var serviceLocation = $('#center_for_home').val();
 
-                                    // Check if all fields are filled
-                                    if (address && deliveryType && serviceLocation) {
-                                        // Send Ajax request to Django view
-                                        $.ajax({
-                                            url: '{% url "calculate_delivery_fee" %}', // Update with your view URL
-                                            type: 'POST',
-                                            data: {
-                                                'address': address,
-                                                'delivery_type': deliveryType,
-                                                'service_location': serviceLocation,
-                                                'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token
-                                            },
-                                            success: function (response) {
-                                                // Update the delivery fee
-                                                if (response.delivery_fee) {
-                                                    $('#delivery-fee').text('Delivery Fee: ' + response.delivery_fee);
-                                                    $('#deliveryFee').attr('value', response.delivery_fee)
-                                                    $('#place_order').attr('disabled', false);
-                                                    $('#d_fee').text(response.delivery_fee + " TZS");
-                                                    $('#total_price').text((parseFloat({{ request.first.get_sub_total }}) + parseFloat(response.delivery_fee)) + " TZS")
-                                                } else {
-                                                    $('#delivery-fee').text('Invalid address');
-                                                    $('#place_order').attr('disabled', true)
-                                                }
-
-                                            },
-                                            error: function (xhr, status, error) {
-                                                console.error('Error calculating delivery fee:', error);
-                                            }
-                                        });
-                                    } else {
-                                        $('#delivery-fee').text('Please fill all fields to calculate delivery fee.');
-                                    }
-                                });
+                            // on click of address suggestion, calculate delivery fee
+                            $('#address').on('blur', function () {
+                                setTimeout(function () {
+                                    calculateDeliveryFee();
+                                }, 500);
                             });
+
+                        
+                            function calculateDeliveryFee() {
+                                // Get the values from the form
+                                var address = $('#address').val();
+                                var deliveryType = $('input[name="delivery_type"]:checked').val();
+                                var serviceLocation = $('#center_for_home').val();
+
+                                // Check if all fields are filled
+                                if (address && deliveryType && serviceLocation) {
+                                    // Send Ajax request to Django view
+                                    $.ajax({
+                                        url: '{% url "calculate_delivery_fee" %}', // Update with your view URL
+                                        type: 'POST',
+                                        data: {
+                                            'address': address,
+                                            'delivery_type': deliveryType,
+                                            'service_location': serviceLocation,
+                                            'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token
+                                        },
+                                        success: function (response) {
+                                            // Update the delivery fee
+                                            if (response.delivery_fee) {
+                                                $('#delivery-fee').text('Delivery Fee: ' + response.delivery_fee);
+                                                $('#deliveryFee').attr('value', response.delivery_fee)
+                                                $('#place_order').attr('disabled', false);
+                                                $('#d_fee').text(response.delivery_fee + " TZS");
+                                                $('#total_price').text((parseFloat({{ request.first.get_sub_total }}) + parseFloat(response.delivery_fee)) + " TZS")
+                                            } else {
+                                                $('#delivery-fee').text('Invalid address');
+                                                $('#place_order').attr('disabled', true)
+                                            }
+
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Error calculating delivery fee:', error);
+                                        }
+                                    });
+                                } else {
+                                    $('#delivery-fee').text('Please fill all fields to calculate delivery fee.');
+                                }
+                            }
                         </script>
 
                     </article>
