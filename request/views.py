@@ -199,8 +199,7 @@ def calculate_delivery_fee(request):
                 delivery_fee = (distance_meters / 1000) * service.organization.cost_per_km + 5000
 
             # Return JSON response
-            return JsonResponse({'delivery_fee': f"{delivery_fee:.2f}"})  # Format fee as currency
-
+            return JsonResponse({'delivery_fee': f"{delivery_fee:.2f}", "distance": (distance_meters / 1000)})
         except Exception as e:
             print(f"Error calculating distance: {e}")
             return JsonResponse({'error': 'Unable to calculate delivery fee. Please try again later.'})
@@ -213,6 +212,8 @@ def CreateStripeCheckoutSessionView(request):
         price = float(request.POST.get('price'))
         alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
 
+        # Add 18% tax with total price
+        price += price * .18
         # check the mobile number
         mobile = str(request.POST.get('mobile'))
         if not mobile.startswith("+255"):
