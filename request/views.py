@@ -224,6 +224,8 @@ def CreateStripeCheckoutSessionView(request):
             user=request.user if request.user.is_authenticated else None,
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
+            gender=request.POST.get('gender'),
+            date_of_birth=request.POST.get('date_of_birth'),
             email=request.POST.get('email'),
             mobile=mobile,
             address='test'  # if user select collection center, save the center address

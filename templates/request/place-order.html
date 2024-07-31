@@ -67,7 +67,7 @@
 
                     <article class="card mb-4">
                         <div class="card-body">
-                            <h4 class="card-title mb-4">Contact info</h4>
+                            <h4 class="card-title mb-4">Patient Details</h4>
 
                             <div class="row">
                                 <div class="form-group col-sm-6">
@@ -81,6 +81,16 @@
                                            class="form-control">
                                 </div>
                                 <div class="form-group col-sm-6">
+                                    <label>Gender*</label>
+                                    <input required name="gender" type="text" placeholder="Type here"
+                                           class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Date of Birth*</label>
+                                    <input required name="date_of_birth" type="date" placeholder="Type here"
+                                           class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
                                     <label>Phone*</label>
                                     <input required name="mobile" type="text" value="+255" class="form-control">
                                 </div>
@@ -91,8 +101,7 @@
                                 </div>
                             </div> <!-- row.// -->
 
-                        </div> <!-- card-body.// -->
-                    </article> <!-- card.// -->
+                        
 
 
                     <article class="accordion" id="accordion_pay">
@@ -101,10 +110,11 @@
 
                                 <label class="form-check collapsed" data-toggle="collapse"
                                        data-target="#collection_center">
-                                    <input class="form-check-input" name="delivery-option" checked type="radio"
+                                    <input class="form-check-input center-y" name="delivery-option" checked type="radio"
                                            value="collection-center">
                                     <h6 class="form-check-label">
-                                        Laboratory Collection Centre
+                                        <img src="{% static 'images/icons/lab.PNG' %}" style="height: 40px; width: auto" alt="">
+                                        I would like to visit laboratory centre for sample collection
 
                                     </h6>
                                 </label>
@@ -127,9 +137,9 @@
                         <div class="card">
                             <header class="card-header">
                                 <label class="form-check" data-toggle="collapse" data-target="#collection_home">
-                                    <input class="form-check-input" name="delivery-option" type="radio"
+                                    <input class="form-check-input center-y" name="delivery-option" type="radio"
                                            value="collection-home">
-                                    <h6 class="form-check-label">Home or Workplace Service</h6>
+                                    <h6 class="form-check-label"><img src="{% static 'images/icons/ambulance.PNG' %}" style="height: 40px; width: auto" alt=""> I would like sample collection service at my home or workplace</h6>
                                 </label>
                             </header>
                             <div id="collection_home" class="collapse" data-parent="#accordion_pay">
@@ -290,7 +300,7 @@
                         });
                     </script>
 
-                    <article class="card my-4">
+                    <article class=" my-4">
 
                         <div class="card-body">
                             <h4 class="card-title mb-4">Insurance Details</h4>
@@ -352,13 +362,16 @@
                         });
 
                     </script>
+                        
+                        </div>
+                    </article>
 
                     <input type="hidden" name="price" value="{{ request.first.get_sub_total }}">
                     <button class="btn btn-primary btn-block" id="place_order"> Place Order</button>
 
                 </form> <!-- col.// -->
-                <aside class="col-md-4">
-                    <div class="card">
+                <aside class="col-md-4" >
+                    <div class="card sticky-top">
                         <div class="card-body">
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
