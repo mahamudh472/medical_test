@@ -1,3 +1,5 @@
+from math import radians, cos, sin, atan2, sqrt
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from main.models import Test, TestSet, Service
@@ -165,6 +167,25 @@ def checkout(request):
     return render(request, "request/place-order.html", context)
 
 
+def calculate_haversine_distance(lat1, lon1, lat2, lon2):
+    # Earth radius in kilometers
+    R = 6371.0
+
+    # Convert coordinates from degrees to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Difference in coordinates
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    # Haversine formula
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = R * c
+
+    return distance
+
+
 def calculate_delivery_fee(request):
     if request.method == 'POST':
         # Extract data from POST request
@@ -172,9 +193,7 @@ def calculate_delivery_fee(request):
         delivery_type = request.POST.get('delivery_type')
         service_location = request.POST.get('service_location')
         api_key = settings.GOOGLE_MAPS_API_KEY
-        print(address)
-        print(delivery_type)
-        print(service_location)
+
         # Initialize Google Maps client
         gmaps = googlemaps.Client(key=api_key)
 
@@ -186,20 +205,41 @@ def calculate_delivery_fee(request):
                 mode="driving"
             )
 
-            # Extract distance
-            distance_meters = response['rows'][0]['elements'][0]['distance']['value']
+            # Check if the status is OK
+            status = response['rows'][0]['elements'][0]['status']
+
+            if status == "OK":
+                # Extract distance
+                distance_meters = response['rows'][0]['elements'][0]['distance']['value']
+                distance_km = distance_meters / 1000
+            else:
+                # Calculate straight-line distance using Haversine formula
+                service_location_geocode = gmaps.geocode(service_location)
+                address_geocode = gmaps.geocode(address)
+
+                if not service_location_geocode or not address_geocode:
+                    return JsonResponse({'error': 'Unable to geocode one or both locations.'})
+
+                service_lat = service_location_geocode[0]['geometry']['location']['lat']
+                service_lon = service_location_geocode[0]['geometry']['location']['lng']
+                address_lat = address_geocode[0]['geometry']['location']['lat']
+                address_lon = address_geocode[0]['geometry']['location']['lng']
+
+                distance_km = calculate_haversine_distance(service_lat, service_lon, address_lat, address_lon)
+                print(f"Using Haversine distance: {distance_km} km")
 
             # Get the service details from the database
             service = Service.objects.get(location=service_location)
 
             # Calculate delivery fee based on the delivery type
             if delivery_type == "standard":
-                delivery_fee = (distance_meters / 1000) * service.organization.cost_per_km + 1000
+                delivery_fee = distance_km * service.organization.cost_per_km + 1000
             else:
-                delivery_fee = (distance_meters / 1000) * service.organization.cost_per_km + 5000
+                delivery_fee = distance_km * service.organization.cost_per_km + 5000
 
             # Return JSON response
-            return JsonResponse({'delivery_fee': f"{delivery_fee:.2f}", "distance": (distance_meters / 1000)})
+            return JsonResponse({'delivery_fee': f"{delivery_fee:.2f}", "distance": f"{distance_km:.2f}"})
+
         except Exception as e:
             print(f"Error calculating distance: {e}")
             return JsonResponse({'error': 'Unable to calculate delivery fee. Please try again later.'})
