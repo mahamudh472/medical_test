@@ -59,6 +59,8 @@ class Order(models.Model):
     email = models.EmailField()
     mobile = models.CharField(max_length=15)
     address = models.TextField()
+    additional_address = models.CharField(max_length=50, blank=True, null=True)
+    postcode = models.CharField(max_length=20, blank=True, null=True)
     requests = models.ManyToManyField(Request, related_name='order_requests')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     # Insurance
