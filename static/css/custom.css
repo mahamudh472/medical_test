@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    font-family: "Poppins", sans-serif;
+}
+/* Styling for the search form container */
+.form-container {
+    background-color: rgb(230, 230, 230);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* Styling for the main search form */
+.search {
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for form controls */
+.form-control {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Styling for form labels */
+.form-label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Positioning of search icon in input fields */
+.search-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    color: #6c757d;
+}
+
+/* Padding for form controls to account for search icons */
+.form-control-padding {
+    padding-left: 35px !important;
+}
+
+/* Styling for filter buttons */
+.filter-button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Styling for active filter buttons */
+.filter-button.active,
+.filter-button:hover {
+    background-color: #007bff;
+    color: #fff;
+}

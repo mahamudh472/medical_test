@@ -13,63 +13,103 @@
                 <img src="{% static 'images/banners/image-1.jpeg' %}" class="rounded"
                      style="height: 300px; width: 100%; object-fit: cover">
             </div>
-            <div class="p-5 rounded my-5" style="background-color: rgb(230,230,230)" >
-                <form action="{% url 'search' %}" class=" search bg-white" method="get" style="overflow: hidden;  border-radius: 8px">
-                    {% comment %} <div class="input-group w-100">
-                        <input list="suggestions" id="query-input" name="query" type="text" class="form-control"
-                            style="width:60%;" placeholder="Search">
-                        <datalist id="suggestions">
 
-                        </datalist>
-                        <select id="query-category" name="category" class="form-control" style="width:10%;">
-                            <option selected value="test">Test</option>
-                            <option value="service">Service</option>
-                        </select>
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div> {% endcomment %}
-                    <div class="row border rounded p-4 center-x relative" >
-                        <div class="d-flex flex-column pl-4 col-6 border-right">
-                            <label for="query-input" class="text-muted">Search</label>
-                            <div class="relative">
-                                <i class="fa fa-search absolute center-y"></i>
-                                <input class="form-control px-4" style="border: none !important;" type="text" list="suggestions" id="query-input" name="query" placeholder="Name, Hospital or clinic name">
+            <div class="p-5 rounded my-5" style="background-color: rgb(230,230,230)">
+                <form action="{% url 'search' %}" class="search" method="get">
+                    <div class="row border rounded p-4 d-flex align-items-center">
+                        <!-- Search input for query -->
+                        <div class="col-md-6 col-12 border-right mb-3 mb-md-0">
+                            <label for="query-input" class="form-label">Search</label>
+                            <div class="position-relative">
+                                <i class="fa fa-search search-icon"></i>
+                                <input class="form-control form-control-padding" type="text" list="suggestions"
+                                       id="query-input" name="query" placeholder="Name, Hospital or clinic name">
                                 <datalist id="suggestions"></datalist>
                             </div>
-
                         </div>
-                        <div class="d-flex flex-column col-5">
-                            <label for="location" class="text-muted">Location</label>
-                            <div class="relative">
-                                <i class="fa fa-search absolute center-y"></i>
-                                <input class="form-control px-4" style="border: none !important;" name="location" type="text" id="location" placeholder="Location, Postcode or Address">
+                        <!-- Input for location -->
+                        <div class="col-md-5 col-12 mb-3 mb-md-0">
+                            <label for="location" class="form-label">Location</label>
+                            <div class="position-relative">
+                                <i class="fa fa-map-marker search-icon"></i>
+                                <input class="form-control form-control-padding" name="location" type="text"
+                                       id="location"
+                                       placeholder="Location, Postcode or Address">
                             </div>
-
                         </div>
-                        <button class="col-1 btn btn-primary" type="submit"><i class="fa fa-search"></i> </button>
-
+                        <!-- Submit button -->
+                        <div class="col-md-1 col-12">
+                            <button class="btn btn-primary btn-block" type="submit"><i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Filter buttons -->
+                    <div class="d-flex justify-content-center mt-3">
+                        <button type="button" class="filter-button" data-filter="near-me">Laboratory Service Near Me
+                        </button>
+                        <button type="button" class="filter-button" data-filter="workplace">Home/Workplace Services
+                        </button>
+                        <button type="button" class="filter-button" data-filter="24hours">24 Hours Laboratory</button>
+                        <button type="button" class="filter-button" data-filter="iso-certified">ISO Certified
+                            Laboratory
+                        </button>
+                        <input type="hidden" name="near-me" value="no">
+                        <input type="hidden" name="workplace" value="no">
+                        <input type="hidden" name="24hours" value="no">
+                        <input type="hidden" name="iso-certified" value="no">
                     </div>
                 </form>
                 <script src="https://maps.googleapis.com/maps/api/js?key=REMOVED&libraries=places"></script>
-                        <script>
-                            // Initialize Google Maps Autocomplete
-                            function initializeAutocomplete() {
-                                const addressInput = document.getElementById('location');
+                <script>
+                    $(document).ready(function () {
+                        // Initialize Google Maps Autocomplete
+                        function initializeAutocomplete() {
+                            const addressInput = $('#location')[0];
+                            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                                componentRestrictions: {country: 'TZ'}
+                            });
+                        }
 
-                                // Create the autocomplete object and associate it with the textarea
-                                const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-                                    componentRestrictions: {country: 'TZ'} // Optional: Restrict to a specific country
-                                });
+                        google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
 
-                                
+                        // Handle dynamic suggestions using jQuery AJAX
+                        $('#query-input').on('input', function () {
+                            const query = $(this).val();
+                            const category = $('#location').val();
+                            $.ajax({
+                                url: `/suggestions?query=${query}&category=${category}`,
+                                method: 'GET',
+                                success: function (data) {
+                                    const suggestions = $('#suggestions');
+                                    suggestions.empty();
+                                    data.forEach(suggestion => {
+                                        suggestions.append($('<option>').val(suggestion));
+                                    });
+                                }
+                            });
+                        });
+
+                        // Handle filter button toggle and selection logic
+                        const selectedFilters = new Set(); // Set to store selected filters
+
+                        $('.filter-button').on('click', function () {
+                            $(this).toggleClass('active');
+                            const filter = $(this).data('filter');
+
+                            // Add or remove the filter from the set
+                            if ($(this).hasClass('active')) {
+                                selectedFilters.add(filter);
+                                $(`input[name=${filter}]`).val('yes')
+                                console.log(`Filter selected: ${filter}`);
+                            } else {
+                                selectedFilters.delete(filter);
+                                $(`input[name=${filter}]`).val('no')
+                                console.log(`Filter deselected: ${filter}`);
                             }
+                        });
 
-                            // Call the initialize function when the window loads
-                            google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
-                        </script>
+                    });
+                </script>
                 <script>
                     const query_input = document.getElementById("query-input");
                     const query_category = document.getElementById("location");
