@@ -280,7 +280,12 @@ def CreateStripeCheckoutSessionView(request):
             order.address = address
             delivery_fee = request.POST.get('delivery_fee')
             price += float(delivery_fee)
-
+        additional_address = request.POST.get('additional_address')
+        if additional_address:
+            order.additional_address = additional_address
+        postcode = request.POST.get('postcode')
+        if postcode:
+            order.postcode = postcode
         insurance = request.POST.get('insurance_status')
         if insurance == "yes":
             order.insurance_membership_id = request.POST.get('insurance-id')

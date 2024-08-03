@@ -45,19 +45,21 @@
                     </div>
                     <!-- Filter buttons -->
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center  mt-3">
-                        <button type="button" class="filter-button" data-filter="near-me">Laboratory Service Near Me
+                        <button type="button" class="filter-button" id="get-location-btn">Laboratory Service Near Me
                         </button>
-                        <button type="button" class="filter-button" data-filter="workplace">Home/Workplace Services
-                        </button>
-                        <button type="button" class="filter-button" data-filter="24hours">24 Hours Laboratory</button>
-                        <button type="button" class="filter-button" data-filter="iso-certified">ISO Certified
+                        <a href="{% url 'home_services' %}"><button type="button" class="filter-button" data-filter="workplace">Home/Workplace Services
+                        </button></a>
+                        <a href="{% url 'open_24_hours_services' %}"><button type="button" class="filter-button" data-filter="24hours">24 Hours Laboratory</button></a>
+                        <a href="{% url 'iso_certified_services' %}"><button type="button" class="filter-button" data-filter="iso-certified">ISO Certified
                             Laboratory
-                        </button>
-                        <input type="hidden" name="near-me" value="no">
-                        <input type="hidden" name="workplace" value="no">
-                        <input type="hidden" name="24hours" value="no">
-                        <input type="hidden" name="iso-certified" value="no">
+                        </button></a>
+
                     </div>
+                </form>
+                <form action="{% url 'near_me_laboratories' %}" id="near_me" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="latitude" value="">
+                    <input type="hidden" name="longitude" value="">
                 </form>
                 <script src="https://maps.googleapis.com/maps/api/js?key=REMOVED&libraries=places"></script>
                 <script>
@@ -89,25 +91,6 @@
                             });
                         });
 
-                        // Handle filter button toggle and selection logic
-                        const selectedFilters = new Set(); // Set to store selected filters
-
-                        $('.filter-button').on('click', function () {
-                            $(this).toggleClass('active');
-                            const filter = $(this).data('filter');
-
-                            // Add or remove the filter from the set
-                            if ($(this).hasClass('active')) {
-                                selectedFilters.add(filter);
-                                $(`input[name=${filter}]`).val('yes')
-                                console.log(`Filter selected: ${filter}`);
-                            } else {
-                                selectedFilters.delete(filter);
-                                $(`input[name=${filter}]`).val('no')
-                                console.log(`Filter deselected: ${filter}`);
-                            }
-                        });
-
                     });
                 </script>
                 <script>
@@ -125,6 +108,52 @@
                                     suggestions.appendChild(option);
                                 });
                             });
+                    });
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        $('#get-location-btn').on('click', function () {
+                            // Check if Geolocation is supported
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    function (position) {
+                                        // Successful retrieval of position
+                                        var latitude = position.coords.latitude;
+                                        var longitude = position.coords.longitude;
+
+                                        $('input[name=latitude]').val(latitude)
+                                        $('input[name=longitude]').val(longitude)
+
+                                        // Log the coordinates to the console
+                                        console.log('Latitude:', latitude);
+                                        console.log('Longitude:', longitude);
+                                        $('#near_me').submit()
+                                    },
+                                    function (error) {
+                                        // Handle errors
+                                        var errorMessage;
+                                        switch (error.code) {
+                                            case error.PERMISSION_DENIED:
+                                                errorMessage = "Permission denied. Please allow location access.";
+                                                break;
+                                            case error.POSITION_UNAVAILABLE:
+                                                errorMessage = "Location information is unavailable.";
+                                                break;
+                                            case error.TIMEOUT:
+                                                errorMessage = "Request to get location timed out.";
+                                                break;
+                                            case error.UNKNOWN_ERROR:
+                                                errorMessage = "An unknown error occurred.";
+                                                break;
+                                        }
+                                        $('#location-result').text(errorMessage);
+                                    }
+                                );
+                            } else {
+                                // Geolocation is not supported
+                                $('#location-result').text("Geolocation is not supported by this browser.");
+                            }
+                        });
                     });
                 </script>
             </div>

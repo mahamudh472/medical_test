@@ -117,6 +117,69 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return distance
 
 
+def near_me_laboratories(request):
+    if request.method == "POST":
+        user_lat = request.POST.get('latitude')
+        user_lng = request.POST.get('longitude')
+        services = Service.objects.all()
+        api_key = settings.GOOGLE_MAPS_API_KEY
+        # Initialize the Google Maps client
+        gmaps = googlemaps.Client(key=api_key)
+        nearby_services = []
+
+        for service in services:
+            # Convert service location to geocode
+            try:
+                service_geocode = gmaps.geocode(service.location)
+                if service_geocode:
+                    service_lat = service_geocode[0]['geometry']['location']['lat']
+                    service_lng = service_geocode[0]['geometry']['location']['lng']
+
+                    # Calculate distance between user and service location
+                    distance = calculate_distance(user_lat, user_lng, service_lat, service_lng)
+
+                    if distance <= 10:
+                        nearby_services.append(service.id)
+            except Exception as e:
+                print(f"Error converting service location to geocode: {e}")
+
+        # Filter services to include only nearby services
+        services = services.filter(id__in=nearby_services)
+
+        context = {
+            'services': services,
+        }
+
+        return render(request, "main/search_service.html", context)
+
+
+def open_24_hours_services(request):
+    services = Service.objects.filter(open_24_hours=True)
+    context = {
+        'services': services,
+    }
+
+    return render(request, "main/search_service.html", context)
+
+
+def iso_certified_services(request):
+    services = Service.objects.filter(iso_certificate_status=True)
+    context = {
+        'services': services,
+    }
+
+    return render(request, "main/search_service.html", context)
+
+
+def home_services(request):
+    services = Service.objects.all()
+    context = {
+        'services': services,
+    }
+
+    return render(request, "main/search_service.html", context)
+
+
 def search_service(request):
     # Get query parameters
     query = request.GET.get('query', '')
