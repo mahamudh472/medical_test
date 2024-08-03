@@ -248,10 +248,10 @@
                                                 $('#delivery-fee').text(`Service Charges TZS ${response.delivery_fee}`);
                                                 $('#deliveryFee').attr('value', response.delivery_fee)
                                                 $('#place_order').attr('disabled', false);
-                                                $('#d_fee').text(response.delivery_fee + " TZS");
-                                                let tax = $('#tax').text().split(" ")[0]
+                                                $('#d_fee').text("TZS " + response.delivery_fee);
+                                                let tax = $('#tax').text().split(" ")[1]
                                                 console.log(tax)
-                                                $('#total_price').text((parseFloat({{ request.first.get_sub_total }}) + parseFloat(response.delivery_fee) + parseFloat(tax) ) + " TZS")
+                                                $('#total_price').text("TZS " + (parseFloat({{ request.first.get_sub_total }}) + parseFloat(response.delivery_fee) + parseFloat(tax) ))
                                             } else {
                                                 $('#delivery-fee').text('Invalid address');
                                                 $('#place_order').attr('disabled', true)
@@ -274,8 +274,8 @@
                         $(document).ready(function () {
 
                             let tax = {{ request.first.get_sub_total }}*.18
-                            $('#tax').text((tax).toFixed(2).toString() + " TZS" )
-                            $('#total_price').text((parseFloat({{ request.first.get_sub_total }}) + parseFloat(tax)).toFixed(2) + " TZS")
+                            $('#tax').text("TZS " + (tax).toFixed(2).toString() )
+                            $('#total_price').text("TZS "+(parseFloat({{ request.first.get_sub_total }}) + parseFloat(tax)).toFixed(2))
 
                             // Function to toggle required attribute based on selected radio option
                             function toggleRequiredFields() {
@@ -375,20 +375,20 @@
                         <div class="card-body">
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
-                                <dd class="text-right" id="total"> {{ request.first.get_sub_total }} TZS</dd>
+                                <dd class="text-right" id="total"> TZS {{ request.first.get_sub_total }}</dd>
                             </dl>
                             <dl class="dlist-align">
                                 <dt>Delivery fee:</dt>
-                                <dd class="text-right" id="d_fee"> 00 TZS</dd>
+                                <dd class="text-right" id="d_fee">TZS 00 </dd>
                             </dl>
                             <dl class="dlist-align">
                                 <dt>Tax (18%):</dt>
-                                <dd class="text-right" id="tax"> 00 TZS</dd>
+                                <dd class="text-right" id="tax">TZS 00 </dd>
                             </dl>
                             <dl class="dlist-align">
                                 <dt>Total:</dt>
                                 <dd class="text-right text-dark b">
-                                    <strong id="total_price">{{ request.first.get_sub_total }} TZS</strong></dd>
+                                    <strong id="total_price">TZS {{ request.first.get_sub_total }} </strong></dd>
                             </dl>
                             <hr>
                             <p class="text-center mb-3">
