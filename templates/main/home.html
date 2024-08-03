@@ -14,7 +14,7 @@
                      style="height: 300px; width: 100%; object-fit: cover">
             </div>
 
-            <div class="p-5 rounded my-5" style="background-color: rgb(230,230,230)">
+            <div class="p-5 rounded my-5 " style="background-color: rgb(230,230,230)">
                 <form action="{% url 'search' %}" class="search" method="get">
                     <div class="row border rounded p-4 d-flex align-items-center">
                         <!-- Search input for query -->
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <!-- Filter buttons -->
-                    <div class="d-flex justify-content-center mt-3">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center  mt-3">
                         <button type="button" class="filter-button" data-filter="near-me">Laboratory Service Near Me
                         </button>
                         <button type="button" class="filter-button" data-filter="workplace">Home/Workplace Services
