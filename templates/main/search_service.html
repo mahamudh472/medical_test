@@ -41,24 +41,34 @@
                                         {{service.name}}
                                     </h6>
                                     <p class="mt-2">
-                                        <i class="fas fa-map-marker-alt"></i>
+                                        <i class="fas fa-hospital"></i>
                                         {{service.location}}
                                     </p>
-                                    <div class="mt-2">
-                                        {% if service.open_24_hours %}
-                                            <i class="fas fa-clock"></i>
-                                            Open 24 hours
+                                    <p class="mt-2">
+                                        {% if service.lat and service.lng %}
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ service.lat }},{{ service.lng }}" target="_blank">
                                         {% else %}
-                                            <i class="fas fa-clock"></i>
-                                            {{service.open_days}}
-                                            <br />
-                                            {{service.opening_time}} - {{service.closing_time}}
-                                            {% if other_time %}
-                                                <br />
-                                                {{service.other_time}}
-                                            {% endif %}
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ service.location|urlencode }}" target="_blank">
                                         {% endif %}
-                                    </div>
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        View on Google Maps
+                                            </a>
+                                    </p>
+{#                                    <div class="mt-2">#}
+{#                                        {% if service.open_24_hours %}#}
+{#                                            <i class="fas fa-clock"></i>#}
+{#                                            Open 24 hours#}
+{#                                        {% else %}#}
+{#                                            <i class="fas fa-clock"></i>#}
+{#                                            {{service.open_days}}#}
+{#                                            <br />#}
+{#                                            {{service.opening_time}} - {{service.closing_time}}#}
+{#                                            {% if other_time %}#}
+{#                                                <br />#}
+{#                                                {{service.other_time}}#}
+{#                                            {% endif %}#}
+{#                                        {% endif %}#}
+{#                                    </div>#}
                                 </div>
                             </div>
                             <!-- icontext.// -->
