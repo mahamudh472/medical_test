@@ -26,6 +26,8 @@ class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=100)
+    lat = models.CharField(max_length=50, blank=True, null=True)
+    lng = models.CharField(max_length=50, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
     iso_certificate_status = models.BooleanField(default=False)
     iso_certificate_symbol = models.CharField(max_length=100, blank=True, null=True)
