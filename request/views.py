@@ -12,6 +12,8 @@ import requests
 import random
 import googlemaps
 
+from .utils import check_and_redeem_voucher, create_voucher_snippet
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -349,3 +351,15 @@ def cancelled(request, alphanumeric_id):
     order.status = "CANCELLED"
     order.save()
     return render(request, 'request/cancel.html')
+
+
+def check_voucher(request):
+    voucher_token = "kdfjkdf"
+    print(voucher_token)
+    result = check_and_redeem_voucher(voucher_token)
+    return JsonResponse(result)
+
+
+def create_voucher(request):
+    result = create_voucher_snippet(100)
+    return JsonResponse(result)
