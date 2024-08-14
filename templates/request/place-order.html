@@ -263,10 +263,9 @@
                                                         $('#delivery-fee').text(`Service Charges TZS ${response.delivery_fee}`);
                                                         $('#deliveryFee').attr('value', response.delivery_fee)
                                                         $('#place_order').attr('disabled', false);
-                                                        $('#d_fee').text("TZS " + response.delivery_fee);
-                                                        let tax = $('#tax').text().split(" ")[1]
-                                                        console.log(tax)
-                                                        $('#total_price').text("TZS " + (parseFloat({{ request.first.get_sub_total }}) + parseFloat(response.delivery_fee) + parseFloat(tax)))
+                                                        $('[name=delivery_fee_amount]').val(response.delivery_fee);
+                                                        $('#total_price').text("TZS " + $("#final_amount").val())
+                                                        update_price_card_info()
                                                     } else {
                                                         $('#delivery-fee').text('Invalid address');
                                                         $('#place_order').attr('disabled', true)
@@ -287,10 +286,6 @@
 
                             <script>
                                 $(document).ready(function () {
-
-                                    let tax = {{ request.first.get_sub_total }} * .18
-                                    $('#tax').text("TZS " + (tax).toFixed(2).toString())
-                                    $('#total_price').text("TZS " + (parseFloat({{ request.first.get_sub_total }}) + parseFloat(tax)).toFixed(2))
 
                                     // Function to toggle required attribute based on selected radio option
                                     function toggleRequiredFields() {
@@ -412,16 +407,11 @@
                                                 console.log(response)
 
                                                 if (response.redeemed) {
-                                                    let discoount = {{ request.first.get_sub_total }} * (response.voucher.percent_off/100)
-                                                    console.log("dis: "+ discoount)
-                                                    let new_total ={{ request.first.get_sub_total }} - discoount
-                                                    console.log(new_total)
-                                                    let tax =  new_total * .18
-                                                    $("#total_price").text("TZS " + ((new_total + parseFloat(tax)).toFixed(2)))
-                                                    $("#discount").text("TZS "+discoount.toFixed(2))
-                                                    $('#tax').text("TZS " + (tax).toFixed(2).toString())
+                                                    let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off/100)
+                                                    $("[name=discount_amount]").val(discount)
                                                     $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
                                                     $('#discount_percent').val(response.voucher.voucher_id)
+                                                    update_price_card_info()
                                                 } else {
                                                     $('#voucher_response').text(response.error).addClass('alert alert-danger').removeClass('alert-success')
                                                 }
@@ -445,6 +435,11 @@
                 <aside class="col-md-4">
                     <div class="card sticky-top">
                         <div class="card-body">
+                            <input type="hidden" name="sub_total" value="{{ request.first.get_sub_total }}">
+                            <input type="hidden" name="discount_amount" value="00">
+                            <input type="hidden" name="delivery_fee_amount" value="00">
+                            <input type="hidden" name="tax_amount" value="00">
+                            <input type="hidden" name="final_amount" value="00">
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
                                 <dd class="text-right" id="total"> TZS {{ request.first.get_sub_total }}</dd>
@@ -475,7 +470,23 @@
             </div> <!-- row.// -->
 
             <!-- ============================ COMPONENT 2 END//  ================================= -->
+            <script>
+                function update_price_card_info(){
+                    let total = Number($('[name=sub_total]').val())
+                    let discount = Number($('[name=discount_amount]').val())
+                    let d_fee = Number($('[name=delivery_fee_amount]').val())
+                    let tax = (total-discount+d_fee)*0.18
+                    let final_amount = $('[name=final_amount]')
+                    final_amount.val(((total-discount)+d_fee+tax).toFixed(2))
+                    $('#total').text("TZS " + total.toFixed(2));
+                    $('#discount').text("TZS " + discount.toFixed(2));
+                    $('#d_fee').text("TZS " + d_fee.toFixed(2));
+                    $('#tax').text("TZS " + tax.toFixed(2));
+                    $('#total_price').text("TZS " + final_amount.val() );
 
+                }
+                update_price_card_info()
+            </script>
 
         </div> <!-- container .//  -->
     </section>

@@ -267,17 +267,12 @@ def CreateStripeCheckoutSessionView(request):
 
             if check_response.status_code == 200:
                 voucher_data = check_response.json()
-                print(voucher_data.get('valid'))
                 if voucher_data.get('valid'):
-                    print(price)
-                    print(price * voucher_data['voucher']['percent_off']/100)
-                    price = price -  price * voucher_data['voucher']['percent_off']/100
-
-                    print(price)
+                    price = price - price * voucher_data['voucher']['percent_off']/100
 
 
-        # Add 18% tax with total price
-        price += price * .18
+
+
         # check the mobile number
         mobile = str(request.POST.get('mobile'))
 
@@ -305,6 +300,10 @@ def CreateStripeCheckoutSessionView(request):
             order.address = address
             delivery_fee = request.POST.get('delivery_fee')
             price += float(delivery_fee)
+
+        # Add 18% tax with total price
+        price += price * .18
+
         additional_address = request.POST.get('additional_address')
         if additional_address:
             order.additional_address = additional_address
