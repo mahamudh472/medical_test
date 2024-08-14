@@ -254,10 +254,33 @@ def CreateStripeCheckoutSessionView(request):
         price = float(request.POST.get('price'))
         alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
 
+        voucher_token = request.POST.get("voucher_token")
+        print(voucher_token)
+        if voucher_token:
+            api_url = 'http://cloudscript.business/api/voucher/'
+            headers = {
+                'Authorization': f'Token {settings.CLOUDSCRIPT_API_KEY}',
+            }
+
+            check_url = f'{api_url}/check/{voucher_token}/'
+            check_response = requests.get(check_url, headers=headers)
+
+            if check_response.status_code == 200:
+                voucher_data = check_response.json()
+                print(voucher_data.get('valid'))
+                if voucher_data.get('valid'):
+                    print(price)
+                    print(price * voucher_data['voucher']['percent_off']/100)
+                    price = price -  price * voucher_data['voucher']['percent_off']/100
+
+                    print(price)
+
+
         # Add 18% tax with total price
         price += price * .18
         # check the mobile number
         mobile = str(request.POST.get('mobile'))
+
         if not mobile.startswith("+255"):
             mobile = "+255" + mobile
 
@@ -354,10 +377,10 @@ def cancelled(request, alphanumeric_id):
 
 
 def check_voucher(request):
-    voucher_token = "kdfjkdf"
-    print(voucher_token)
-    result = check_and_redeem_voucher(voucher_token)
-    return JsonResponse(result)
+    if request.method == "POST":
+        voucher_token = request.POST.get("voucher_token")
+        result = check_and_redeem_voucher(voucher_token)
+        return JsonResponse(result)
 
 
 def create_voucher(request):
