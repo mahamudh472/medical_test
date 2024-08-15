@@ -15,4 +15,6 @@ urlpatterns = [
     path('success/<str:alphanumeric_id>', views.success, name='success'),
     path('cancel/<str:alphanumeric_id>', views.cancelled, name='cancel'),
     path('calculate-delivery-fee/', views.calculate_delivery_fee, name='calculate_delivery_fee'),
+    path('check_voucher/', views.check_voucher, name="check_voucher"),
+    path('create_voucher', views.create_voucher, name="create_voucher")
 ]

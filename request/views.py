@@ -12,6 +12,8 @@ import requests
 import random
 import googlemaps
 
+from .utils import check_and_redeem_voucher, create_voucher_snippet
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -252,10 +254,28 @@ def CreateStripeCheckoutSessionView(request):
         price = float(request.POST.get('price'))
         alphanumeric_id = ''.join(random.choices('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=8))
 
-        # Add 18% tax with total price
-        price += price * .18
+        voucher_token = request.POST.get("voucher_token")
+        print(voucher_token)
+        if voucher_token:
+            api_url = 'http://cloudscript.business/api/voucher/'
+            headers = {
+                'Authorization': f'Token {settings.CLOUDSCRIPT_API_KEY}',
+            }
+
+            check_url = f'{api_url}/check/{voucher_token}/'
+            check_response = requests.get(check_url, headers=headers)
+
+            if check_response.status_code == 200:
+                voucher_data = check_response.json()
+                if voucher_data.get('valid'):
+                    price = price - price * voucher_data['voucher']['percent_off']/100
+
+
+
+
         # check the mobile number
         mobile = str(request.POST.get('mobile'))
+
         if not mobile.startswith("+255"):
             mobile = "+255" + mobile
 
@@ -280,6 +300,10 @@ def CreateStripeCheckoutSessionView(request):
             order.address = address
             delivery_fee = request.POST.get('delivery_fee')
             price += float(delivery_fee)
+
+        # Add 18% tax with total price
+        price += price * .18
+
         additional_address = request.POST.get('additional_address')
         if additional_address:
             order.additional_address = additional_address
@@ -349,3 +373,15 @@ def cancelled(request, alphanumeric_id):
     order.status = "CANCELLED"
     order.save()
     return render(request, 'request/cancel.html')
+
+
+def check_voucher(request):
+    if request.method == "POST":
+        voucher_token = request.POST.get("voucher_token")
+        result = check_and_redeem_voucher(voucher_token)
+        return JsonResponse(result)
+
+
+def create_voucher(request):
+    result = create_voucher_snippet(100)
+    return JsonResponse(result)
