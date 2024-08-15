@@ -406,7 +406,7 @@
                                                 // Handle the success response here
                                                 console.log(response)
 
-                                                if (response.redeemed) {
+                                                if (response.valid) {
                                                     let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off/100)
                                                     $("[name=discount_amount]").val(discount)
                                                     $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
@@ -418,7 +418,7 @@
                                             },
                                             error: function (xhr, status, error) {
                                                 // Handle errors here
-                                                alert("Something went wrong. Please try again.");
+                                                console.log("Something went wrong. Please try again.");
                                             }
                                         });
                                     });
