@@ -12,7 +12,7 @@ import requests
 import random
 import googlemaps
 
-from .utils import check_and_redeem_voucher, create_voucher_snippet, voucher_isvalid
+from .utils import  create_voucher_snippet, voucher_isvalid
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
