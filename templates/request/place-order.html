@@ -19,9 +19,9 @@
                                     <table class="table table-borderless table-shopping-cart">
                                         <thead class="text-muted">
                                         <tr class="small text-uppercase">
-                                            <th scope="col">Test</th>
-                                            <th style="white-space:nowrap" scope="col" width="120">Unit</th>
-                                            <th style="white-space:nowrap" scope="col">Cost</th>
+                                            <th scope="col" class="text-center">Test</th>
+                                            <th style="white-space:nowrap" class="text-center" scope="col" width="120">Unit</th>
+                                            <th style="white-space:nowrap" scope="col" class="text-center">Cost</th>
 
                                         </tr>
                                         </thead>
@@ -31,19 +31,16 @@
                                                 <td>
                                                     <figure class="itemside align-items-center">
                                                         <figcaption class="info">
-                                                            <a href="#" class="title text-dark">
+                                                            <a href="#" class="title text-dark text-center">
                                                                 {{ test.test.name }}
                                                             </a>
-                                                            <p class="text-muted small">
-                                                                Sample Type: {{ test.test.sample_type }}
-                                                            </p>
                                                         </figcaption>
                                                     </figure>
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     {{ test.unit }}
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     TZS <span id="amount{{ test.test.id }}">{{ test.get_price }}</span>
                                                 </td>
 
@@ -81,15 +78,25 @@
                                            class="form-control">
                                 </div>
                                 <div class="form-group col-sm-6">
-                                    <label>Gender*</label>
-                                    <input required name="gender" type="text" placeholder="Type here"
-                                           class="form-control">
+                                    <label>Sex*</label>
+                                    <select name="gender" class="form-control" id="" required>
+                                        <option value="male">Male</option>
+                                        <option value="Male">Female</option>
+                                    </select>
+                                    {#                                    <input required name="gender" type="text" placeholder="Type here"#}
+                                    {#                                           class="form-control">#}
                                 </div>
                                 <div class="form-group col-sm-6">
                                     <label>Date of Birth*</label>
                                     <input required name="date_of_birth" type="date" placeholder="Type here"
-                                           class="form-control">
+                                           class="form-control" id="dob">
                                 </div>
+                                <script>
+                                    const today = new Date();
+                                    today.setDate(today.getDate() - 1);
+                                    const maxDate = today.toISOString().split('T')[0];
+                                    document.getElementById('dob').setAttribute('max', maxDate);
+                                </script>
                                 <div class="form-group col-sm-6">
                                     <label>Phone*</label>
                                     <input required name="mobile" type="text" value="+255" class="form-control">
@@ -124,10 +131,7 @@
                                             <select class="form-control" name="collection-center" id="center">
                                                 <option value="" disabled selected>Select a collection center.</option>
                                                 {% for ser in service %}
-                                                    <optgroup label="{{ ser.name }}">
-                                                        <option value="{{ ser.location }}">{{ ser.location }}</option>
-                                                    </optgroup>
-
+                                                        <option value="{{ ser.location }}"><b>{{ ser.name }}</b> - {{ ser.location }}</option>
                                                 {% endfor %}
                                             </select>
                                             <input type="hidden" name="delivery_fee" id="deliveryFee" value="">
@@ -171,9 +175,7 @@
                                                     <option value="" disabled selected>Select a collection center.
                                                     </option>
                                                     {% for ser in service %}
-                                                        <optgroup label="{{ ser.name }}">
-                                                            <option value="{{ ser.location }}">{{ ser.location }}</option>
-                                                        </optgroup>
+                                                            <option value="{{ ser.location }}">{{ ser.name }} - {{ ser.location }}</option>
                                                     {% endfor %}
                                                 </select>
                                                 <div class="form-group col-12 my-2">
@@ -341,8 +343,14 @@
                                             <div class="form-group col-sm-6">
                                                 <label>Expiry Date</label>
                                                 <input type="date" placeholder="Type here" class="form-control"
-                                                       name="expiry-date">
+                                                       name="expiry-date" id="expiry-date">
                                             </div>
+                                            <script>
+                                                const today2 = new Date();
+                                                today2.setDate(today2.getDate() + 2);
+                                                const minDate = today2.toISOString().split('T')[0];
+                                                document.getElementById('expiry-date').setAttribute('min', minDate);
+                                            </script>
 
                                         </div> <!-- row.// -->
                                     </div>
@@ -407,7 +415,7 @@
                                                 console.log(response)
 
                                                 if (response.valid) {
-                                                    let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off/100)
+                                                    let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off / 100)
                                                     $("[name=discount_amount]").val(discount)
                                                     $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
                                                     $('#discount_percent').val(response.voucher.voucher_id)
@@ -443,7 +451,8 @@
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
                                 <dd class="text-right" id="total"> TZS {{ request.first.get_sub_total }}</dd>
-                            </dl> <dl class="dlist-align">
+                            </dl>
+                            <dl class="dlist-align">
                                 <dt>Discount:</dt>
                                 <dd class="text-right" id="discount"> TZS 00</dd>
                             </dl>
@@ -471,20 +480,21 @@
 
             <!-- ============================ COMPONENT 2 END//  ================================= -->
             <script>
-                function update_price_card_info(){
+                function update_price_card_info() {
                     let total = Number($('[name=sub_total]').val())
                     let discount = Number($('[name=discount_amount]').val())
                     let d_fee = Number($('[name=delivery_fee_amount]').val())
-                    let tax = (total-discount+d_fee)*0.18
+                    let tax = (total - discount + d_fee) * 0.18
                     let final_amount = $('[name=final_amount]')
-                    final_amount.val(((total-discount)+d_fee+tax).toFixed(2))
+                    final_amount.val(((total - discount) + d_fee + tax).toFixed(2))
                     $('#total').text("TZS " + total.toFixed(2));
                     $('#discount').text("TZS " + discount.toFixed(2));
                     $('#d_fee').text("TZS " + d_fee.toFixed(2));
                     $('#tax').text("TZS " + tax.toFixed(2));
-                    $('#total_price').text("TZS " + final_amount.val() );
+                    $('#total_price').text("TZS " + final_amount.val());
 
                 }
+
                 update_price_card_info()
             </script>
 

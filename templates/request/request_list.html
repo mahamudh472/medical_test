@@ -41,7 +41,7 @@
                                     <th scope="col">Test</th>
                                     <th style="white-space:nowrap" scope="col" width="120">Unit</th>
                                     <th style="white-space:nowrap" scope="col">Cost</th>
-                                    <th scope="col" class="text-right" width="200"></th>
+                                    <th scope="col" class="text-right" width="140"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -53,9 +53,7 @@
                                                     <a href="#" class="title text-dark">
                                                         {{ test.test.name }}
                                                     </a>
-                                                    <p class="text-muted small">
-                                                        Sample Type: {{ test.test.sample_type }}
-                                                    </p>
+                                                    
                                                 </figcaption>
                                             </figure>
                                         </td>
@@ -67,8 +65,8 @@
                                                 <button class="btn btn-light counter-btn increment">+</button>
                                             </div>
                                         </td>
-                                        <td style="vertical-align: middle;">
-                                            TZS <span id="amount{{ test.test.id }}">{{ test.get_price }}</span>
+                                        <td style="min-width: 170px; padding-top: 20px">
+                                            TZS <span id="amount{{ test.test.id }}" style="text-wrap: nowrap !important; ">{{ test.get_price }}</span>
                                         </td>
                                         <td class="text-right">
                                             <a href="{% url "remove_request" test.id %}"
@@ -96,7 +94,7 @@
                         <div class="card-body">
                             <dl class="dlist-align">
                                 <dt>Total price:</dt>
-                                <dd class="text-right"> TZS {{ request.first.get_sub_total }}</dd>
+                                <dd class="text-right" style="text-wrap: nowrap"> TZS {{ request.first.get_sub_total }}</dd>
                             </dl>
                             <dl class="dlist-align">
                                 <dt>Tax:</dt>
