@@ -12,7 +12,7 @@ import requests
 import random
 import googlemaps
 
-from .utils import check_and_redeem_voucher, create_voucher_snippet
+from .utils import  create_voucher_snippet, voucher_isvalid
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -268,6 +268,8 @@ def CreateStripeCheckoutSessionView(request):
             if check_response.status_code == 200:
                 voucher_data = check_response.json()
                 if voucher_data.get('valid'):
+                    redeem_url = f'{api_url}/redeem/{voucher_token}/'
+                    redeem_response = requests.post(redeem_url, headers=headers)
                     price = price - price * voucher_data['voucher']['percent_off']/100
 
 
@@ -378,7 +380,7 @@ def cancelled(request, alphanumeric_id):
 def check_voucher(request):
     if request.method == "POST":
         voucher_token = request.POST.get("voucher_token")
-        result = check_and_redeem_voucher(voucher_token)
+        result = voucher_isvalid(voucher_token)
         return JsonResponse(result)
 
 
