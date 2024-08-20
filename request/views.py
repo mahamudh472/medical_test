@@ -313,7 +313,7 @@ def CreateStripeCheckoutSessionView(request):
         if postcode:
             order.postcode = postcode
         insurance = request.POST.get('insurance_status')
-        if insurance == "yes":
+        if insurance == "on":
             order.insurance_membership_id = request.POST.get('insurance-id')
             order.insurance_expiry_date = request.POST.get('expiry-date')
             return redirect('success', alphanumeric_id)
