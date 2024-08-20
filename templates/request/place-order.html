@@ -20,7 +20,9 @@
                                         <thead class="text-muted">
                                         <tr class="small text-uppercase">
                                             <th scope="col" class="text-center">Test</th>
-                                            <th style="white-space:nowrap" class="text-center" scope="col" width="120">Unit</th>
+                                            <th style="white-space:nowrap" class="text-center" scope="col" width="120">
+                                                Unit
+                                            </th>
                                             <th style="white-space:nowrap" scope="col" class="text-center">Cost</th>
 
                                         </tr>
@@ -131,7 +133,8 @@
                                             <select class="form-control" name="collection-center" id="center">
                                                 <option value="" disabled selected>Select a collection center.</option>
                                                 {% for ser in service %}
-                                                        <option value="{{ ser.location }}"><b>{{ ser.name }}</b> - {{ ser.location }}</option>
+                                                    <option value="{{ ser.location }}"><b>{{ ser.name }}</b>
+                                                        - {{ ser.location }}</option>
                                                 {% endfor %}
                                             </select>
                                             <input type="hidden" name="delivery_fee" id="deliveryFee" value="">
@@ -175,7 +178,8 @@
                                                     <option value="" disabled selected>Select a collection center.
                                                     </option>
                                                     {% for ser in service %}
-                                                            <option value="{{ ser.location }}">{{ ser.name }} - {{ ser.location }}</option>
+                                                        <option value="{{ ser.location }}">{{ ser.name }}
+                                                            - {{ ser.location }}</option>
                                                     {% endfor %}
                                                 </select>
                                                 <div class="form-group col-12 my-2">
@@ -311,6 +315,23 @@
                                     });
                                 });
                             </script>
+
+                            <article class=" my-4">
+
+                                <div class="card-body">
+                                    <div class="card-title h4">Select payment Method</div>
+                                    <div class="row">
+                                        <div class="col-3 d-flex flex-column">
+                                            <a href="" class="btn btn-outline-primary my-1">Card</a>
+                                            <a href="" class="btn btn-outline-primary my-1">Insurance</a>
+                                            <a href="" class="btn btn-outline-primary my-1">Voucher</a>
+                                            <a href="" class="btn btn-outline-primary my-1">Cash</a>
+                                            <a href="" class="btn btn-outline-primary my-1">Mobile Wallet</a>
+                                        </div>
+                                        <div class="col-7">sadkjfkd</div>
+                                    </div>
+                                </div>
+                            </article>
 
                             <article class=" my-4">
 
