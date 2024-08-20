@@ -1,0 +1,44 @@
+<div class="col-md-6">
+    {% comment %} <a href="#" style="color: black">  {% endcomment %}
+        <div class="card p-3 card-product-grid">
+            <figcaption class="info-wrap h-100">
+                <div style="min-height: 120px">
+                    <h5 class="title"> {{ test.name }} </h5>
+{#                    <div>#}
+{#                        <i class="far fa-building"></i> {{ test.organization.name }}#}
+{#                    </div>#}
+{#                    <div class=" mt-2">#}
+{#                        <i class="fas fa-file-invoice-dollar"></i>#}
+{#                        Billing code: {{ test.billing_code }}#}
+{#                    </div> #}
+                    <div class=" mt-2">
+                        <i class="fas fa-calendar-check"></i>
+                        Price: TSZ {{ test.tz_std_tariff }} 
+                    </div>
+                    <div class=" mt-2">
+                        {% if test.available %}
+                            <i class="fas fa-check-circle"></i>
+                            Available
+                        {% else %}
+                            <i class="fas fa-times-circle"></i>
+                            Not available
+
+                        {% endif %}
+                    </div> 
+                </div>
+                <div class="row align-items-center mt-3">
+                    <a class="col-md-6" href="{% url "add_request" test.id %}">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus"></i>
+                            Request</button>
+                    </a>
+                    <a class="col-md-6" href="{% url "favorite_add" test.id %}">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="far fa-heart"></i>
+                            Favorite</button>
+                    </a>
+                </div>
+            </figcaption>
+        </div>
+    {% comment %} </a> {% endcomment %}
+</div>

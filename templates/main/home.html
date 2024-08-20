@@ -1,0 +1,200 @@
+{% extends "include/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+
+    <!-- ========================= SECTION MAIN ========================= -->
+    <section class="section-intro padding-y-sm">
+        <div class="container">
+
+            <div class="intro-banner-wrap">
+                <img src="{% static 'images/banners/image-1.jpeg' %}" class="rounded"
+                     style="height: 300px; width: 100%; object-fit: cover">
+            </div>
+
+            <div class="p-5 rounded my-5 " style="background-color: rgb(230,230,230)">
+                <form action="{% url 'search' %}" class="search" method="get">
+                    <div class="row border rounded p-4 d-flex align-items-center">
+                        <!-- Search input for query -->
+                        <div class="col-md-6 col-12 border-right mb-3 mb-md-0">
+                            <label for="query-input" class="form-label">Search</label>
+                            <div class="position-relative">
+                                <i class="fa fa-search search-icon"></i>
+                                <input class="form-control form-control-padding" type="text" list="suggestions"
+                                       id="query-input" name="query" placeholder="Name, Hospital or clinic name">
+                                <datalist id="suggestions"></datalist>
+                            </div>
+                        </div>
+                        <!-- Input for location -->
+                        <div class="col-md-5 col-12 mb-3 mb-md-0">
+                            <label for="location" class="form-label">Location</label>
+                            <div class="position-relative">
+                                <i class="fa fa-map-marker search-icon"></i>
+                                <input class="form-control form-control-padding" name="location" type="text"
+                                       id="location"
+                                       placeholder="Location, Postcode or Address">
+                            </div>
+                        </div>
+                        <!-- Submit button -->
+                        <div class="col-md-1 col-12">
+                            <button class="btn btn-primary btn-block" type="submit"><i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Filter buttons -->
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center  mt-3">
+                        <button type="button" class="filter-button" id="get-location-btn">Laboratory Service Near Me
+                        </button>
+                        <a href="{% url 'home_services' %}"><button type="button" class="filter-button" data-filter="workplace">Home/Workplace Services
+                        </button></a>
+                        <a href="{% url 'open_24_hours_services' %}"><button type="button" class="filter-button" data-filter="24hours">24 Hours Laboratory</button></a>
+                        <a href="{% url 'iso_certified_services' %}"><button type="button" class="filter-button" data-filter="iso-certified">ISO Certified
+                            Laboratory
+                        </button></a>
+
+                    </div>
+                </form>
+                <form action="{% url 'near_me_laboratories' %}" id="near_me" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="latitude" value="">
+                    <input type="hidden" name="longitude" value="">
+                </form>
+                <script src="https://maps.googleapis.com/maps/api/js?key=REMOVED&libraries=places"></script>
+                <script>
+                    $(document).ready(function () {
+                        // Initialize Google Maps Autocomplete
+                        function initializeAutocomplete() {
+                            const addressInput = $('#location')[0];
+                            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                                componentRestrictions: {country: 'TZ'}
+                            });
+                        }
+
+                        google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
+
+                        // Handle dynamic suggestions using jQuery AJAX
+                        $('#query-input').on('input', function () {
+                            const query = $(this).val();
+                            const category = $('#location').val();
+                            $.ajax({
+                                url: `/suggestions?query=${query}&category=${category}`,
+                                method: 'GET',
+                                success: function (data) {
+                                    const suggestions = $('#suggestions');
+                                    suggestions.empty();
+                                    data.forEach(suggestion => {
+                                        suggestions.append($('<option>').val(suggestion));
+                                    });
+                                }
+                            });
+                        });
+
+                    });
+                </script>
+                <script>
+                    const query_input = document.getElementById("query-input");
+                    const query_category = document.getElementById("location");
+                    query_input.addEventListener("input", function (event) {
+                        fetch(`/suggestions?query=${query_input.value}&category=${query_category.value}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const suggestions = document.getElementById("suggestions");
+                                suggestions.innerHTML = "";
+                                data.forEach(suggestion => {
+                                    const option = document.createElement("option");
+                                    option.value = suggestion;
+                                    suggestions.appendChild(option);
+                                });
+                            });
+                    });
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        $('#get-location-btn').on('click', function () {
+                            // Check if Geolocation is supported
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    function (position) {
+                                        // Successful retrieval of position
+                                        var latitude = position.coords.latitude;
+                                        var longitude = position.coords.longitude;
+
+                                        $('input[name=latitude]').val(latitude)
+                                        $('input[name=longitude]').val(longitude)
+
+                                        // Log the coordinates to the console
+                                        console.log('Latitude:', latitude);
+                                        console.log('Longitude:', longitude);
+                                        $('#near_me').submit()
+                                    },
+                                    function (error) {
+                                        // Handle errors
+                                        var errorMessage;
+                                        switch (error.code) {
+                                            case error.PERMISSION_DENIED:
+                                                errorMessage = "Permission denied. Please allow location access.";
+                                                break;
+                                            case error.POSITION_UNAVAILABLE:
+                                                errorMessage = "Location information is unavailable.";
+                                                break;
+                                            case error.TIMEOUT:
+                                                errorMessage = "Request to get location timed out.";
+                                                break;
+                                            case error.UNKNOWN_ERROR:
+                                                errorMessage = "An unknown error occurred.";
+                                                break;
+                                        }
+                                        $('#location-result').text(errorMessage);
+                                    }
+                                );
+                            } else {
+                                // Geolocation is not supported
+                                $('#location-result').text("Geolocation is not supported by this browser.");
+                            }
+                        });
+                    });
+                </script>
+            </div>
+
+        </div> <!-- container //  -->
+    </section>
+    <!-- ========================= SECTION MAIN END// ========================= -->
+
+    <!-- ========================= SECTION  ========================= -->
+    <section class="section-name padding-y-sm">
+        <div class="container">
+
+            <header class="section-heading">
+                <a href="{% url "all_tests" %}" class="btn btn-outline-primary float-right">See all</a>
+                <h3 class="section-title">Popular tests</h3>
+            </header><!-- sect-heading -->
+
+
+            <div class="row">
+                {% for test in tests %}
+                    {% include "components/test.html" %}
+                {% endfor %}
+
+            </div> <!-- row.// -->
+
+
+            <header class="section-heading">
+                <a href="{% url "all_test_sets" %}" class="btn btn-outline-primary float-right">See all</a>
+                <h3 class="section-title">Popular test sets</h3>
+            </header>
+            <div class="row">
+                {% for set in test_sets %}
+                    {% include "components/test_set.html" %}
+                {% endfor %}
+
+            </div> <!-- row.// -->
+
+        </div><!-- container // -->
+    </section>
+    <!-- ========================= SECTION  END// ========================= -->
+
+
+
+{% endblock content %}

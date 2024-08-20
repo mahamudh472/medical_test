@@ -1,0 +1,518 @@
+{% extends "include/base.html" %}
+{% load static %}
+
+{% block content %}
+    <section class="section-content padding-y bg">
+        <div class="container">
+
+
+            <!-- ============================ COMPONENT 2 ================================= -->
+            <div class="row">
+                <form class="col-md-8" action="{% url 'create-checkout-session' %}" method="POST">
+                    {% csrf_token %}
+
+                    <article class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Review cart</h4>
+                            <div class="row">
+                                {% if request %}
+                                    <table class="table table-borderless table-shopping-cart">
+                                        <thead class="text-muted">
+                                        <tr class="small text-uppercase">
+                                            <th scope="col" class="text-center">Test</th>
+                                            <th style="white-space:nowrap" class="text-center" scope="col" width="120">
+                                                Unit
+                                            </th>
+                                            <th style="white-space:nowrap" scope="col" class="text-center">Cost</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for test in request %}
+                                            <tr data-test-id="{{ test.id }}">
+                                                <td>
+                                                    <figure class="itemside align-items-center">
+                                                        <figcaption class="info">
+                                                            <a href="#" class="title text-dark text-center">
+                                                                {{ test.test.name }}
+                                                            </a>
+                                                        </figcaption>
+                                                    </figure>
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ test.unit }}
+                                                </td>
+                                                <td class="text-center">
+                                                    TZS <span id="amount{{ test.test.id }}">{{ test.get_price }}</span>
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <hr>
+                                    <div class="p-3 pt-0">
+                                        Total: {{ request|length }} tests
+                                    </div>
+                                {% else %}
+                                    <div class="p-3" role="alert">
+                                        No tests in the request
+                                    </div>
+                                {% endif %}
+                            </div> <!-- row.// -->
+                        </div> <!-- card-body.// -->
+                    </article> <!-- card.// -->
+
+
+                    <article class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Patient Details</h4>
+
+                            <div class="row">
+                                <div class="form-group col-sm-6">
+                                    <label>First name*</label>
+                                    <input required name="first_name" type="text" placeholder="Type here"
+                                           class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Last name*</label>
+                                    <input required name="last_name" type="text" placeholder="Type here"
+                                           class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Sex*</label>
+                                    <select name="gender" class="form-control" id="" required>
+                                        <option value="male">Male</option>
+                                        <option value="Male">Female</option>
+                                    </select>
+                                    {#                                    <input required name="gender" type="text" placeholder="Type here"#}
+                                    {#                                           class="form-control">#}
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Date of Birth*</label>
+                                    <input required name="date_of_birth" type="date" placeholder="Type here"
+                                           class="form-control" id="dob">
+                                </div>
+                                <script>
+                                    const today = new Date();
+                                    today.setDate(today.getDate() - 1);
+                                    const maxDate = today.toISOString().split('T')[0];
+                                    document.getElementById('dob').setAttribute('max', maxDate);
+                                </script>
+                                <div class="form-group col-sm-6">
+                                    <label>Phone*</label>
+                                    <input required name="mobile" type="text" value="+255" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Email*</label>
+                                    <input required name="email" type="email" placeholder="example@gmail.com"
+                                           class="form-control">
+                                </div>
+                            </div> <!-- row.// -->
+
+
+                            <article class="accordion" id="accordion_pay">
+                                <div class="card">
+                                    <header class="card-header">
+
+                                        <label class="form-check collapsed" data-toggle="collapse"
+                                               data-target="#collection_center">
+                                            <input class="form-check-input center-y" name="delivery-option" checked
+                                                   type="radio"
+                                                   value="collection-center">
+                                            <h6 class="form-check-label">
+                                                <img src="{% static 'images/icons/lab.PNG' %}"
+                                                     style="height: 40px; width: auto" alt="">
+                                                I would like to visit laboratory centre for sample collection
+
+                                            </h6>
+                                        </label>
+                                    </header>
+                                    <div id="collection_center" class="collapse show" data-parent="#accordion_pay">
+                                        <div class="card-body">
+                                            <select class="form-control" name="collection-center" id="center">
+                                                <option value="" disabled selected>Select a collection center.</option>
+                                                {% for ser in service %}
+                                                    <option value="{{ ser.location }}"><b>{{ ser.name }}</b>
+                                                        - {{ ser.location }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="delivery_fee" id="deliveryFee" value="">
+                                        </div> <!-- card body .// -->
+                                    </div> <!-- collapse .// -->
+                                </div> <!-- card.// -->
+                                <div class="card">
+                                    <header class="card-header">
+                                        <label class="form-check" data-toggle="collapse" data-target="#collection_home">
+                                            <input class="form-check-input center-y" name="delivery-option" type="radio"
+                                                   value="collection-home">
+                                            <h6 class="form-check-label"><img
+                                                    src="{% static 'images/icons/ambulance.PNG' %}"
+                                                    style="height: 40px; width: auto" alt=""> I would like sample
+                                                collection service at my home or workplace</h6>
+                                        </label>
+                                    </header>
+                                    <div id="collection_home" class="collapse" data-parent="#accordion_pay">
+                                        <div class="card-body">
+                                            <h4 class="card-title mb-4">Home or Workplace Service Details</h4>
+                                            <div class="my-3 mx-2">
+                                                <div class="h6 d-inline-block ">Home Service Type:</div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="delivery_type"
+                                                           id="flexRadioDefault1"
+                                                           value="standard" checked>
+                                                    <label class="form-check-label" for="flexRadioDefault1">
+                                                        Standard Within 24 Hours of Booking Confirmation
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="delivery_type"
+                                                           id="flexRadioDefault2"
+                                                           value="express">
+                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                        Express – Within 4 Hours of Booking Confirmation
+                                                    </label>
+                                                </div>
+                                                <select class="form-control mx-3 my-2" name="collection-center"
+                                                        id="center_for_home">
+                                                    <option value="" disabled selected>Select a collection center.
+                                                    </option>
+                                                    {% for ser in service %}
+                                                        <option value="{{ ser.location }}">{{ ser.name }}
+                                                            - {{ ser.location }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-group col-12 my-2">
+                                                    <label for="address">Address*</label>
+                                                    <input class="form-control" name="address"
+                                                           id="address">
+                                                </div>
+                                                <div class="form-group col-12 my-2">
+                                                    <label for="additional_address">Additional direction details
+                                                        (optional)</label>
+                                                    <input class="form-control" name="additional_address"
+                                                           id="additional_address">
+                                                </div>
+                                                <div class="form-group col-12 my-2">
+                                                    <label for="postcode">Post code</label>
+                                                    <input class="form-control" name="postcode"
+                                                           id="postcode">
+                                                </div>
+                                                <!-- Add a div to display the delivery fee -->
+                                                <div class="col-12 my-2 row">
+                                                    <span id="delivery-distance" class="text-muted col-6"> </span>
+                                                    <span id="delivery-fee" class="text-muted col-6"></span>
+                                                </div>
+                                            </div> <!-- row.// -->
+                                        </div> <!-- card body .// -->
+                                    </div> <!-- collapse .// -->
+                                </div> <!-- card.// -->
+                                <script src="https://maps.googleapis.com/maps/api/js?key=REMOVED&libraries=places"></script>
+                                <script>
+                                    // Initialize Google Maps Autocomplete
+                                    function initializeAutocomplete() {
+                                        const addressInput = document.getElementById('address');
+
+                                        // Create the autocomplete object and associate it with the textarea
+                                        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+                                            componentRestrictions: {country: 'TZ'} // Optional: Restrict to a specific country
+                                        });
+
+                                    }
+
+                                    // Call the initialize function when the window loads
+                                    google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
+
+                                    // on click of address suggestion, calculate delivery fee
+                                    $('#address').on('blur', function () {
+                                        setTimeout(function () {
+                                            calculateDeliveryFee();
+                                        }, 500);
+                                    });
+                                    // Listen for changes on delivery type radio buttons
+                                    $('input[name="delivery_type"]').on('change', function () {
+                                        setTimeout(function () {
+                                            calculateDeliveryFee();
+                                        }, 500);
+                                    });
+
+                                    // Listen for changes on collection center dropdown
+                                    $('#center_for_home').on('change', function () {
+                                        setTimeout(function () {
+                                            calculateDeliveryFee();
+                                        }, 500);
+                                    });
+
+
+                                    function calculateDeliveryFee() {
+                                        // Get the values from the form
+                                        var address = $('#address').val();
+                                        var deliveryType = $('input[name="delivery_type"]:checked').val();
+                                        var serviceLocation = $('#center_for_home').val();
+
+                                        // Check if all fields are filled
+                                        if (address && deliveryType && serviceLocation) {
+                                            // Send Ajax request to Django view
+                                            $.ajax({
+                                                url: '{% url "calculate_delivery_fee" %}', // Update with your view URL
+                                                type: 'POST',
+                                                data: {
+                                                    'address': address,
+                                                    'delivery_type': deliveryType,
+                                                    'service_location': serviceLocation,
+                                                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token
+                                                },
+                                                success: function (response) {
+                                                    // Update the delivery fee
+                                                    if (response.delivery_fee) {
+                                                        $('#delivery-distance').text(`Estimated Distance ${response.distance} KM`);
+                                                        $('#delivery-fee').text(`Service Charges TZS ${response.delivery_fee}`);
+                                                        $('#deliveryFee').attr('value', response.delivery_fee)
+                                                        $('#place_order').attr('disabled', false);
+                                                        $('[name=delivery_fee_amount]').val(response.delivery_fee);
+                                                        $('#total_price').text("TZS " + $("#final_amount").val())
+                                                        update_price_card_info()
+                                                    } else {
+                                                        $('#delivery-fee').text('Invalid address');
+                                                        $('#place_order').attr('disabled', true)
+                                                    }
+
+                                                },
+                                                error: function (xhr, status, error) {
+                                                    console.error('Error calculating delivery fee:', error);
+                                                }
+                                            });
+                                        } else {
+                                            $('#delivery-fee').text('Please fill all fields to calculate delivery fee.');
+                                        }
+                                    }
+                                </script>
+
+                            </article>
+
+                            <script>
+                                $(document).ready(function () {
+
+                                    // Function to toggle required attribute based on selected radio option
+                                    function toggleRequiredFields() {
+                                        if ($('input[name="delivery-option"]:checked').val() === 'collection-center') {
+                                            $('#center').attr('required', true);
+                                            $('#center_for_home').removeAttr('required');
+                                            $('#address').removeAttr('required');
+                                        } else if ($('input[name="delivery-option"]:checked').val() === 'collection-home') {
+                                            $('#center').removeAttr('required');
+                                            $('#address').attr('required', true);
+                                            $('#center_for_home').attr('required', true);
+                                        }
+                                    }
+
+                                    // Initial check on page load
+                                    toggleRequiredFields();
+
+                                    // Listen for changes in the radio button selection
+                                    $('input[name="delivery-option"]').change(function () {
+                                        toggleRequiredFields();
+                                    });
+                                });
+                            </script>
+
+                            <article class=" my-4">
+
+                                <div class="card-body">
+                                    <div class="card-title h4">Select payment Method</div>
+                                    <div class="row">
+                                        <div class="col-3 d-flex flex-column">
+                                            <a class="btn btn-outline-primary my-3">Card</a>
+                                            <a class="btn btn-outline-primary my-3">Voucher</a>
+                                            <a class="btn btn-outline-primary my-3" id="insurance_btn">Insurance</a>
+                                            <a class="btn btn-outline-primary my-3">Cash</a>
+                                            <a class="btn btn-outline-primary my-3">Mobile Wallet</a>
+                                            <input type="checkbox" name="insurance_status" id="insurance_yes" class="d-none">
+                                        </div>
+                                        <div class="col-9">
+
+                                            <p class="text-center my-3">
+                                                <img src="{% static 'images/misc/payments.png' %}" height="26">
+                                            </p>
+                                            <div class="col">
+                                                <div class="row">
+
+                                                    <div class="form-group col-sm-10 my-4">
+                                                        <input type="text" placeholder="Enter your voucher token..."
+                                                               class="form-control"
+                                                               id="voucher_token"
+                                                               name="voucher_token">
+                                                    </div>
+                                                    <div class="form-group col-sm-2 my-4">
+                                                        <input type="button" id="redeemBtn" value="Redeem" class="btn btn-primary">
+                                                    </div>
+                    
+                                                </div>
+                                                <p id="voucher_response"></p>
+                                                <input type="hidden" name="discount_percent" id="discount_percent">
+                                                <script>
+                                                    $(document).ready(function () {
+                                                        $('#redeemBtn').click(function (e) {
+                                                            e.preventDefault(); // Prevent default form submission
+                                                            var token = $('#voucher_token').val(); // Get the token value
+                    
+                                                            $.ajax({
+                                                                url: '{% url "check_voucher" %}', // Your Django URL name for the view
+                                                                type: 'POST',
+                                                                data: {
+                                                                    'voucher_token': token,
+                                                                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include the CSRF token for security
+                                                                },
+                                                                success: function (response) {
+                                                                    // Handle the success response here
+                                                                    console.log(response)
+                    
+                                                                    if (response.valid) {
+                                                                        let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off / 100)
+                                                                        $("[name=discount_amount]").val(discount)
+                                                                        $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
+                                                                        $('#discount_percent').val(response.voucher.voucher_id)
+                                                                        update_price_card_info()
+                                                                    } else {
+                                                                        $('#voucher_response').text(response.error).addClass('alert alert-danger').removeClass('alert-success')
+                                                                    }
+                                                                },
+                                                                error: function (xhr, status, error) {
+                                                                    // Handle errors here
+                                                                    console.log("Something went wrong. Please try again.");
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
+                                            <div class="col">
+                                                <div style="display: none" id="insurance_block">
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-6">
+                                                            <label>Insurance Membership ID</label>
+                                                            <input type="text" placeholder="Type here" class="form-control"
+                                                                   name="insurance-id">
+                                                        </div>
+                                                        <div class="form-group col-sm-6">
+                                                            <label>Expiry Date</label>
+                                                            <input type="date" placeholder="Type here" class="form-control"
+                                                                   name="expiry-date" id="expiry-date">
+                                                        </div>
+                                                        <script>
+                                                            const today2 = new Date();
+                                                            today2.setDate(today2.getDate() + 2);
+                                                            const minDate = today2.toISOString().split('T')[0];
+                                                            document.getElementById('expiry-date').setAttribute('min', minDate);
+                                                            let insBtn = $('#insurance_yes')
+                                                            
+                                                        </script>
+            
+                                                    </div> <!-- row.// -->
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <script>
+                                $(document).ready(function () {
+                                    // Function to toggle display and required attributes based on radio button selection
+                                    function toggleInsuranceFields() {
+                                        if ($('#insurance_yes').is(':checked')) {
+                                            $('#insurance_block').show(); // Show the insurance block
+                                            $('input[name="insurance-id"]').attr('required', true); // Make Insurance Membership ID required
+                                            $('input[name="expiry-date"]').attr('required', true); // Make Expiry Date required
+                                        } else {
+                                            $('#insurance_block').hide(); // Hide the insurance block
+                                            $('input[name="insurance-id"]').removeAttr('required'); // Remove required attribute
+                                            $('input[name="expiry-date"]').removeAttr('required'); // Remove required attribute
+                                        }
+                                    }
+
+                                    // Initial check on page load
+                                    toggleInsuranceFields();
+                                    $('#insurance_btn').click(function(){
+                                                                if(insBtn.is(":checked")){
+                                                                   insBtn.prop('checked', false)
+                                                                }else{
+                                                                    insBtn.prop('checked', true)
+                                                                }
+                                                                toggleInsuranceFields();
+                                                            })
+                                    
+                                });
+
+                            </script>
+
+                            
+                        </div>
+
+                    </article>
+
+                    <input type="hidden" name="price" value="{{ request.first.get_sub_total }}">
+                    <button class="btn btn-primary btn-block" id="place_order"> Place Order</button>
+
+                </form> <!-- col.// -->
+                <aside class="col-md-4">
+                    <div class="card sticky-top">
+                        <div class="card-body">
+                            <input type="hidden" name="sub_total" value="{{ request.first.get_sub_total }}">
+                            <input type="hidden" name="discount_amount" value="00">
+                            <input type="hidden" name="delivery_fee_amount" value="00">
+                            <input type="hidden" name="tax_amount" value="00">
+                            <input type="hidden" name="final_amount" value="00">
+                            <dl class="dlist-align">
+                                <dt>Total price:</dt>
+                                <dd class="text-right" id="total"> TZS {{ request.first.get_sub_total }}</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Discount:</dt>
+                                <dd class="text-right" id="discount"> TZS 00</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Delivery fee:</dt>
+                                <dd class="text-right" id="d_fee">TZS 00</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Tax (18%):</dt>
+                                <dd class="text-right" id="tax">TZS 00</dd>
+                            </dl>
+                            <dl class="dlist-align">
+                                <dt>Total:</dt>
+                                <dd class="text-right text-dark b">
+                                    <strong id="total_price">TZS {{ request.first.get_sub_total }} </strong></dd>
+                            </dl>
+                            <hr>
+                            <p class="text-center mb-3">
+                                <img src="{% static 'images/misc/payments.png' %}" height="26">
+                            </p>
+                        </div> <!-- card-body.// -->
+                    </div> <!-- card.// -->
+                </aside> <!-- col.// -->
+            </div> <!-- row.// -->
+
+            <!-- ============================ COMPONENT 2 END//  ================================= -->
+            <script>
+                function update_price_card_info() {
+                    let total = Number($('[name=sub_total]').val())
+                    let discount = Number($('[name=discount_amount]').val())
+                    let d_fee = Number($('[name=delivery_fee_amount]').val())
+                    let tax = (total - discount + d_fee) * 0.18
+                    let final_amount = $('[name=final_amount]')
+                    final_amount.val(((total - discount) + d_fee + tax).toFixed(2))
+                    $('#total').text("TZS " + total.toFixed(2));
+                    $('#discount').text("TZS " + discount.toFixed(2));
+                    $('#d_fee').text("TZS " + d_fee.toFixed(2));
+                    $('#tax').text("TZS " + tax.toFixed(2));
+                    $('#total_price').text("TZS " + final_amount.val());
+
+                }
+
+                update_price_card_info()
+            </script>
+
+        </div> <!-- container .//  -->
+    </section>
+{% endblock %}
