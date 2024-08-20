@@ -318,6 +318,7 @@
 
 <article class=" my-4">
 
+<<<<<<< HEAD
     <div class="card-body">
         <div class="card-title h4">Select payment Method</div>
         <div class="row">
@@ -373,6 +374,114 @@
                                             $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
                                             $('#discount_percent').val(response.voucher.voucher_id)
                                             update_price_card_info()
+=======
+                                <div class="card-body">
+                                    <div class="card-title h4">Select payment Method</div>
+                                    <div class="row">
+                                        <div class="col-3 d-flex flex-column">
+                                            <a class="btn btn-outline-primary my-3">Card</a>
+                                            <a class="btn btn-outline-primary my-3">Voucher</a>
+                                            <a class="btn btn-outline-primary my-3" id="insurance_btn">Insurance</a>
+                                            <a class="btn btn-outline-primary my-3">Cash</a>
+                                            <a class="btn btn-outline-primary my-3">Mobile Wallet</a>
+                                            <input type="checkbox" name="insurance_status" id="insurance_yes" class="d-none">
+                                        </div>
+                                        <div class="col-9">
+
+                                            <p class="text-center my-3">
+                                                <img src="{% static 'images/misc/payments.png' %}" height="26">
+                                            </p>
+                                            <div class="col">
+                                                <div class="row">
+
+                                                    <div class="form-group col-sm-10 my-4">
+                                                        <input type="text" placeholder="Enter your voucher token..."
+                                                               class="form-control"
+                                                               id="voucher_token"
+                                                               name="voucher_token">
+                                                    </div>
+                                                    <div class="form-group col-sm-2 my-4">
+                                                        <input type="button" id="redeemBtn" value="Redeem" class="btn btn-primary">
+                                                    </div>
+                    
+                                                </div>
+                                                <p id="voucher_response"></p>
+                                                <input type="hidden" name="discount_percent" id="discount_percent">
+                                                <script>
+                                                    $(document).ready(function () {
+                                                        $('#redeemBtn').click(function (e) {
+                                                            e.preventDefault(); // Prevent default form submission
+                                                            var token = $('#voucher_token').val(); // Get the token value
+                    
+                                                            $.ajax({
+                                                                url: '{% url "check_voucher" %}', // Your Django URL name for the view
+                                                                type: 'POST',
+                                                                data: {
+                                                                    'voucher_token': token,
+                                                                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include the CSRF token for security
+                                                                },
+                                                                success: function (response) {
+                                                                    // Handle the success response here
+                                                                    console.log(response)
+                    
+                                                                    if (response.valid) {
+                                                                        let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off / 100)
+                                                                        $("[name=discount_amount]").val(discount)
+                                                                        $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
+                                                                        $('#discount_percent').val(response.voucher.voucher_id)
+                                                                        update_price_card_info()
+                                                                    } else {
+                                                                        $('#voucher_response').text(response.error).addClass('alert alert-danger').removeClass('alert-success')
+                                                                    }
+                                                                },
+                                                                error: function (xhr, status, error) {
+                                                                    // Handle errors here
+                                                                    console.log("Something went wrong. Please try again.");
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
+                                            <div class="col">
+                                                <div style="display: none" id="insurance_block">
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-6">
+                                                            <label>Insurance Membership ID</label>
+                                                            <input type="text" placeholder="Type here" class="form-control"
+                                                                   name="insurance-id">
+                                                        </div>
+                                                        <div class="form-group col-sm-6">
+                                                            <label>Expiry Date</label>
+                                                            <input type="date" placeholder="Type here" class="form-control"
+                                                                   name="expiry-date" id="expiry-date">
+                                                        </div>
+                                                        <script>
+                                                            const today2 = new Date();
+                                                            today2.setDate(today2.getDate() + 2);
+                                                            const minDate = today2.toISOString().split('T')[0];
+                                                            document.getElementById('expiry-date').setAttribute('min', minDate);
+                                                            let insBtn = $('#insurance_yes')
+                                                            
+                                                        </script>
+            
+                                                    </div> <!-- row.// -->
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <script>
+                                $(document).ready(function () {
+                                    // Function to toggle display and required attributes based on radio button selection
+                                    function toggleInsuranceFields() {
+                                        if ($('#insurance_yes').is(':checked')) {
+                                            $('#insurance_block').show(); // Show the insurance block
+                                            $('input[name="insurance-id"]').attr('required', true); // Make Insurance Membership ID required
+                                            $('input[name="expiry-date"]').attr('required', true); // Make Expiry Date required
+>>>>>>> 2aabf2cdf556ea42bbecb86feb54803adecd2466
                                         } else {
                                             $('#voucher_response').text(response.error).addClass('alert alert-danger').removeClass('alert-success')
                                         }
@@ -381,6 +490,7 @@
                                         // Handle errors here
                                         console.log("Something went wrong. Please try again.");
                                     }
+<<<<<<< HEAD
                                 });
                             });
                         });
@@ -445,6 +555,25 @@
     });
 
 </script>
+=======
+
+                                    // Initial check on page load
+                                    toggleInsuranceFields();
+                                    $('#insurance_btn').click(function(){
+                                                                if(insBtn.is(":checked")){
+                                                                   insBtn.prop('checked', false)
+                                                                }else{
+                                                                    insBtn.prop('checked', true)
+                                                                }
+                                                                toggleInsuranceFields();
+                                                            })
+                                    
+                                });
+
+                            </script>
+
+                            
+>>>>>>> 2aabf2cdf556ea42bbecb86feb54803adecd2466
                         </div>
 
                     </article>
