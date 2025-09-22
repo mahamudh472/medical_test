@@ -2,6 +2,28 @@
 {% load static %}
 
 {% block content %}
+    <style>
+        .payment-method-btn {
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .payment-method-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .payment-method-btn.btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+        #voucher_section, #insurance_block {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
     <section class="section-content padding-y bg">
         <div class="container">
 
@@ -322,20 +344,20 @@
                                     <div class="card-title h4">Select payment Method</div>
                                     <div class="row">
                                         <div class="col-3 d-flex flex-column">
-                                            <button type="button" class="btn btn-outline-primary my-3">Card</button>
-                                            <button type="button" class="btn btn-outline-primary my-3">Voucher</button>
-                                            <button type="button" class="btn btn-outline-primary my-3" id="insurance_btn">Insurance</button>
-                                            <button type="button" class="btn btn-outline-primary my-3">Cash</button>
-                                            <button type="button" class="btn btn-outline-primary my-3">Mobile Wallet</button>
-                                            <input type="checkbox" name="insurance_status" id="insurance_yes"
-                                                   class="d-none">
+                                            <button type="button" class="btn btn-outline-primary my-3 payment-method-btn" data-method="card">Card</button>
+                                            <button type="button" class="btn btn-outline-primary my-3 payment-method-btn" data-method="voucher">Voucher</button>
+                                            <button type="button" class="btn btn-outline-primary my-3 payment-method-btn" data-method="insurance" id="insurance_btn">Insurance</button>
+                                            <button type="button" class="btn btn-outline-primary my-3 payment-method-btn" data-method="cash">Cash</button>
+                                            <button type="button" class="btn btn-outline-primary my-3 payment-method-btn" data-method="mobile_wallet">Mobile Wallet</button>
+                                            <input type="hidden" name="payment_method" id="payment_method" value="">
+                                            <input type="checkbox" name="insurance_status" id="insurance_yes" class="d-none">
                                         </div>
                                         <div class="col-9">
 
                                             <p class="text-center my-3">
                                                 <img src="{% static 'images/misc/payments.png' %}" height="26">
                                             </p>
-                                            <div class="col">
+                                            <div class="col" id="voucher_section" style="display: none;">
                                                 <div class="row">
 
                                                     <div class="form-group col-sm-10 my-4">
@@ -352,6 +374,42 @@
                                                 </div>
                                                 <p id="voucher_response"></p>
                                                 <input type="hidden" name="discount_percent" id="discount_percent">
+                                                <script>
+                                                    $(document).ready(function () {
+                                                        $('#redeemBtn').click(function (e) {
+                                                            e.preventDefault(); // Prevent default form submission
+                                                            var token = $('#voucher_token').val(); // Get the token value
+
+                                                            $.ajax({
+                                                                url: '{% url "check_voucher" %}', // Your Django URL name for the view
+                                                                type: 'POST',
+                                                                data: {
+                                                                    'voucher_token': token,
+                                                                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include the CSRF token for security
+                                                                },
+                                                                success: function (response) {
+                                                                    // Handle the success response here
+                                                                    console.log(response)
+
+                                                                    if (response.valid) {
+                                                                        let discount = {{ request.first.get_sub_total }} * (response.voucher.percent_off / 100)
+                                                                        $("[name=discount_amount]").val(discount)
+                                                                        $('#voucher_response').text(response.message).addClass('alert alert-success').removeClass('alert-danger')
+                                                                        $('#discount_percent').val(response.voucher.voucher_id)
+                                                                        update_price_card_info()
+                                                                    } else {
+                                                                        $('#voucher_response').text(response.error).addClass('alert alert-danger').removeClass('alert-success')
+                                                                    }
+                                                                },
+                                                                error: function (xhr, status, error) {
+                                                                    // Handle errors here
+                                                                    console.log("Something went wrong. Please try again.");
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
                                                 <script>
                                                     $(document).ready(function () {
                                                         $('#redeemBtn').click(function (e) {
@@ -422,6 +480,36 @@
                             </article>
                             <script>
                                 $(document).ready(function () {
+                                    // Payment method selection handler
+                                    $('.payment-method-btn').click(function () {
+                                        // Remove active class from all buttons
+                                        $('.payment-method-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+                                        
+                                        // Add active class to clicked button
+                                        $(this).removeClass('btn-outline-primary').addClass('btn-primary');
+                                        
+                                        // Get selected payment method
+                                        var selectedMethod = $(this).data('method');
+                                        $('#payment_method').val(selectedMethod);
+                                        
+                                        // Hide all payment-specific sections
+                                        $('#voucher_section').hide();
+                                        $('#insurance_block').hide();
+                                        $('#insurance_yes').prop('checked', false);
+                                        
+                                        // Remove required attributes
+                                        $('input[name="insurance-id"]').removeAttr('required');
+                                        $('input[name="expiry-date"]').removeAttr('required');
+                                        
+                                        // Show relevant section based on selected method
+                                        if (selectedMethod === 'voucher') {
+                                            $('#voucher_section').show();
+                                        } else if (selectedMethod === 'insurance') {
+                                            $('#insurance_yes').prop('checked', true);
+                                            toggleInsuranceFields();
+                                        }
+                                    });
+
                                     // Function to toggle display and required attributes based on radio button selection
                                     function toggleInsuranceFields() {
                                         if ($('#insurance_yes').is(':checked')) {
@@ -437,15 +525,6 @@
 
                                     // Initial check on page load
                                     toggleInsuranceFields();
-                                    $('#insurance_btn').click(function () {
-                                        if (insBtn.is(":checked")) {
-                                            insBtn.prop('checked', false)
-                                        } else {
-                                            insBtn.prop('checked', true)
-                                        }
-                                        toggleInsuranceFields();
-                                    })
-
                                 });
 
                             </script>
